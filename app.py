@@ -4,39 +4,46 @@ import plotly.graph_objects as go
 import urllib.parse
 import urllib.request
 import xml.etree.ElementTree as ET
-import pandas as pd
-import numpy as np
 
-# --- 1. PAGE SETUP ---
+# --- 1. PAGE SETUP & MEMORY ---
 st.set_page_config(page_title="Pro Terminal | Dixit Capital", layout="wide", initial_sidebar_state="expanded")
 
-# --- 2. LEAD GENERATION (WHATSAPP INTEGRATED) ---
+# App ki memory (State) ban banana taaki wo yaad rakhe hum kahan hain
+if 'current_view' not in st.session_state:
+    st.session_state.current_view = "HOME"
+
+st.markdown("""
+    <style>
+    .block-container { padding-top: 1.5rem; padding-bottom: 2rem; }
+    hr { margin-top: 1rem; margin-bottom: 1.5rem; border-color: #333; }
+    /* Making the link look exactly like text */
+    a { text-decoration: none !important; color: inherit !important; }
+    </style>
+""", unsafe_allow_html=True)
+
+# --- 2. LEAD GENERATION (WHATSAPP) ---
 @st.dialog("👑 Unlock Premium Access")
 def premium_signup():
     st.markdown("Join **Dixit Capital Premium** to get the access code for our AI Quant Analyst.")
-    
-    # Aapka exact WhatsApp number
     YOUR_WHATSAPP_NUMBER = "917052360459" 
-    
     name = st.text_input("Full Name")
     city = st.text_input("City")
-    
     st.write("---")
-    
     if name and city:
         raw_message = f"Hello Dixit Capital! 📈\n\nI want to purchase the Premium Access Code for the Quant Analyst tool.\nName: {name}\nCity: {city}"
         encoded_message = urllib.parse.quote(raw_message)
         whatsapp_url = f"https://wa.me/{YOUR_WHATSAPP_NUMBER}?text={encoded_message}"
-        
         st.link_button("📲 Chat with Team to get Code", whatsapp_url, type="primary", use_container_width=True)
     else:
         st.button("📲 Chat with Team to get Code", type="primary", disabled=True, use_container_width=True)
-        st.caption("⚠️ Please enter your Name and City to unlock the button.")
 
-# --- 3. BRANDING (Purana Bold & Vibrant Look) ---
+# --- 3. CLICKABLE BRANDING ---
+# href="/" ka matlab hai ki click karte hi app refresh hokar Home par aayegi
 st.markdown("""
     <div style='text-align: center; padding: 10px;'>
-        <h1 style='color: #1E88E5; font-family: "Arial Black", sans-serif;'>🏢 Dixit Capital & Wealth Management</h1>
+        <a href="/" target="_self">
+            <h1 style='color: #1E88E5; font-family: "Arial Black", sans-serif; cursor: pointer;'>🏢 Dixit Capital & Wealth Management</h1>
+        </a>
         <p style='font-style: italic; color: #888888; font-size: 18px;'>Advanced Quantitative Analysis & Portfolio Tracking</p>
     </div>
     <hr>
@@ -44,7 +51,6 @@ st.markdown("""
 
 # --- 4. TOP STOCKS LIST ---
 TOP_STOCKS = {
-    "HOME": "🏠 Home (Dashboard & Tools)",
     "RELIANCE.NS": "Reliance Industries",
     "TCS.NS": "Tata Consultancy Services",
     "HDFCBANK.NS": "HDFC Bank",
@@ -56,34 +62,21 @@ TOP_STOCKS = {
     "SBIN.NS": "State Bank of India"
 }
 
-# --- 5. SIDEBAR & SEARCH ---
+# --- 5. SIDEBAR MENU ---
 st.sidebar.header("⚙️ Main Menu")
+
+if st.sidebar.button("🏠 Go to Home Dashboard", use_container_width=True):
+    st.session_state.current_view = "HOME"
+    st.rerun()
+
+st.sidebar.markdown("<br>", unsafe_allow_html=True)
 
 if st.sidebar.button("👑 Upgrade to Premium", use_container_width=True):
     premium_signup()
+    
+st.sidebar.caption("Click 'DIXIT CAPITAL' at the top to return Home anytime.")
 
-st.sidebar.markdown("---")
-# Secret Premium Unlocker
-premium_code = st.sidebar.text_input("🔑 Premium Access Code:", type="password")
-is_premium = True if premium_code == "AMANPRO" else False
-
-st.sidebar.markdown("---")
-st.sidebar.subheader("🔍 Equity Search")
-
-selected_ticker = st.sidebar.selectbox(
-    "Search or Select Stock:",
-    options=list(TOP_STOCKS.keys()),
-    format_func=lambda x: TOP_STOCKS[x] if x == "HOME" else f"{TOP_STOCKS[x]} ({x.replace('.NS', '')})"
-)
-
-manual_ticker = st.sidebar.text_input("Or type NSE symbol (e.g., ITC):", "")
-
-if manual_ticker:
-    raw_ticker = manual_ticker.upper()
-    user_ticker = raw_ticker if raw_ticker.endswith(".NS") else f"{raw_ticker}.NS"
-else:
-    user_ticker = selected_ticker
-
+# Helper Functions
 @st.cache_data(ttl=300)
 def get_index_data(ticker):
     try: return yf.Ticker(ticker).history(period="2d")
@@ -108,25 +101,49 @@ def get_live_news(company_name):
         return news_items
     except: return []
 
-# --- 6. HOME DASHBOARD ---
-if user_ticker == "HOME":
-    st.markdown("<h3 style='text-align: center;'>Welcome to the Pro Terminal</h3>", unsafe_allow_html=True)
+# --- 6. HOME PAGE (Centralized Layout) ---
+if st.session_state.current_view == "HOME":
+    
+    # 🔍 Center Search Bar
+    st.markdown("<h3 style='text-align: center;'>🔍 Search Asset for Analysis</h3>", unsafe_allow_html=True)
+    st.markdown("<br>", unsafe_allow_html=True)
+    
+    col1, col2, col3 = st.columns([1, 2, 1]) # Center alignment
+    with col2:
+        selected_ticker = st.selectbox("Select from Top Companies:", ["-- Select --"] + list(TOP_STOCKS.keys()), format_func=lambda x: TOP_STOCKS.get(x, x))
+        manual_ticker = st.text_input("Or enter NSE symbol manually (e.g., ITC):", placeholder="Enter ticker symbol...")
+        
+        st.markdown("<br>", unsafe_allow_html=True)
+        if st.button("📊 Run Technical Audit", type="primary", use_container_width=True):
+            target = manual_ticker.upper() if manual_ticker else selected_ticker
+            if target and target != "-- Select --":
+                final_ticker = target if target.endswith(".NS") else f"{target}.NS"
+                st.session_state.current_view = final_ticker
+                st.rerun()
+            else:
+                st.error("Please select or enter a valid stock symbol.")
+                
+    st.write("---")
+
+    # 📡 Market Pulse
+    st.markdown("<h4 style='text-align: center;'>📡 Live Market Pulse</h4>", unsafe_allow_html=True)
     nifty = get_index_data("^NSEI")
     banknifty = get_index_data("^NSEBANK")
     
-    st.markdown("#### 📡 Live Market Pulse")
-    col1, col2, col3 = st.columns(3)
+    m_col1, m_col2, m_col3, m_col4 = st.columns([1, 2, 2, 1])
     if nifty is not None and len(nifty) >= 2:
         n_curr, n_prev = nifty['Close'].iloc[-1], nifty['Close'].iloc[-2]
-        col1.metric("NIFTY 50", f"{n_curr:.2f}", f"{n_curr - n_prev:.2f} ({(n_curr - n_prev)/n_prev * 100:.2f}%)")
+        m_col2.metric("NIFTY 50", f"{n_curr:.2f}", f"{n_curr - n_prev:.2f} ({(n_curr - n_prev)/n_prev * 100:.2f}%)")
     if banknifty is not None and len(banknifty) >= 2:
         bn_curr, bn_prev = banknifty['Close'].iloc[-1], banknifty['Close'].iloc[-2]
-        col2.metric("NIFTY BANK", f"{bn_curr:.2f}", f"{bn_curr - bn_prev:.2f} ({(bn_curr - bn_prev)/bn_prev * 100:.2f}%)")
-    col3.info("👈 Select a stock from the sidebar to view detailed technicals and fundamentals.")
-    st.divider()
+        m_col3.metric("NIFTY BANK", f"{bn_curr:.2f}", f"{bn_curr - bn_prev:.2f} ({(bn_curr - bn_prev)/bn_prev * 100:.2f}%)")
+        
+    st.write("---")
 
-    st.markdown("#### 💰 SIP Wealth Calculator")
-    st.caption("Plan your financial independence with our institutional-grade calculator.")
+    # 💰 Wealth Calculator
+    st.markdown("<h4 style='text-align: center;'>💰 SIP Wealth Calculator</h4>", unsafe_allow_html=True)
+    st.markdown("<p style='text-align: center; color: gray;'>Plan your financial independence.</p>", unsafe_allow_html=True)
+    
     calc_col1, calc_col2 = st.columns([1, 2])
     with calc_col1:
         sip_amount = st.number_input("Monthly SIP (₹)", min_value=500, value=5000, step=500)
@@ -145,6 +162,12 @@ if user_ticker == "HOME":
 
 # --- 7. STOCK ANALYSIS ENGINE ---
 else:
+    user_ticker = st.session_state.current_view
+    
+    if st.button("⬅️ Back to Home Search"):
+        st.session_state.current_view = "HOME"
+        st.rerun()
+        
     @st.cache_data(ttl=300)
     def get_data(symbol):
         try: return yf.Ticker(symbol).history(period="1y")
@@ -166,19 +189,10 @@ else:
         st.markdown(f"## {display_name}")
         st.metric("Last Traded Price", f"₹{curr_price:.2f}", f"{change:.2f} ({pct:.2f}%)")
 
-        # RSI Calculation (For Premium Feature)
-        delta = data['Close'].diff()
-        gain = (delta.where(delta > 0, 0)).rolling(window=14).mean()
-        loss = (-delta.where(delta < 0, 0)).rolling(window=14).mean()
-        rs = gain / loss
-        data['RSI'] = 100 - (100 / (1 + rs))
-        current_rsi = data['RSI'].iloc[-1]
-
         data['SMA50'] = data['Close'].rolling(50).mean()
         data['SMA200'] = data['Close'].rolling(200).mean()
         
-        # Tabs system including Premium
-        tab1, tab2, tab3, tab4 = st.tabs(["📊 Technical Chart", "📋 Fundamental Audit", "📰 Live News", "💎 AI Quant Report (Premium)"])
+        tab1, tab2, tab3, tab4 = st.tabs(["📊 Technical Chart", "📋 Fundamental Audit", "📰 Live News", "💎 AI Quant Report"])
 
         with tab1:
             fig = go.Figure()
@@ -208,67 +222,66 @@ else:
                     st.divider()
             else: st.info("No recent news found.")
 
-        # --- THE PREMIUM QUANT REPORT ---
+        # --- CONTEXTUAL PREMIUM QUANT REPORT ---
         with tab4:
-            if not is_premium:
-                st.error("🔒 **Premium Feature Locked**")
-                st.info("Please enter the Premium Access Code in the sidebar to unlock algorithmic analysis, valuation checks, and future movement insights.")
-            else:
-                st.success("🔓 **Access Granted: Dixit Capital Quant Algorithm Running...**")
-                
-                # Logic Processing
-                pe = info.get('trailingPE', 0)
-                roe = info.get('returnOnEquity', 0) * 100 if info.get('returnOnEquity') else 0
-                debt = info.get('debtToEquity', 0)
-                
-                # Verdict Logic
-                score = 0
-                val_msg = ""
-                tech_msg = ""
-                
-                # Fundamental Valuation
-                if pe > 0 and pe < 20:
-                    score += 2
-                    val_msg = "✅ **Undervalued:** Trading at a discount compared to market averages."
-                elif pe >= 20 and pe < 40:
-                    score += 1
-                    val_msg = "⚖️ **Fairly Valued:** Priced reasonably for its growth expectations."
-                else:
-                    score -= 1
-                    val_msg = "⚠️ **Overpriced:** Trading at a high premium. High expectations are already baked into the price."
+            st.markdown("### 🧠 Automated Quant Analyst")
+            st.info("Unlock algorithmic analysis, valuation checks, and future movement insights.")
+            
+            col_a, col_b = st.columns([1, 2])
+            with col_a:
+                entered_code = st.text_input("🔑 Enter Premium Access Code:", type="password")
+            
+            if entered_code:
+                if entered_code == "AMANPRO":
+                    st.success("🔓 **Access Granted: Dixit Capital Quant Algorithm Running...**")
+                    
+                    # RSI Calculation
+                    delta = data['Close'].diff()
+                    gain = (delta.where(delta > 0, 0)).rolling(window=14).mean()
+                    loss = (-delta.where(delta < 0, 0)).rolling(window=14).mean()
+                    rs = gain / loss
+                    current_rsi = (100 - (100 / (1 + rs))).iloc[-1]
+                    
+                    pe = info.get('trailingPE', 0)
+                    roe = info.get('returnOnEquity', 0) * 100 if info.get('returnOnEquity') else 0
+                    debt = info.get('debtToEquity', 0)
+                    
+                    score = 0
+                    val_msg, tech_msg = "", ""
+                    
+                    if pe > 0 and pe < 20:
+                        score += 2; val_msg = "✅ **Undervalued:** Trading at a discount compared to market averages."
+                    elif pe >= 20 and pe < 40:
+                        score += 1; val_msg = "⚖️ **Fairly Valued:** Priced reasonably for its growth expectations."
+                    else:
+                        score -= 1; val_msg = "⚠️ **Overpriced:** Trading at a high premium. High expectations are already baked into the price."
 
-                # Technical Momentum (RSI)
-                if current_rsi < 35:
-                    score += 2
-                    tech_msg = "📈 **Oversold:** The stock has seen heavy selling and might reverse upwards soon."
-                elif current_rsi > 65:
-                    score -= 1
-                    tech_msg = "📉 **Overbought:** The stock is running too hot. A short-term correction is highly likely."
-                else:
-                    score += 1
-                    tech_msg = "⚖️ **Neutral Momentum:** The stock is trading in a stable zone without extreme volatility."
+                    if current_rsi < 35:
+                        score += 2; tech_msg = "📈 **Oversold:** The stock has seen heavy selling and might reverse upwards soon."
+                    elif current_rsi > 65:
+                        score -= 1; tech_msg = "📉 **Overbought:** The stock is running too hot. A short-term correction is highly likely."
+                    else:
+                        score += 1; tech_msg = "⚖️ **Neutral Momentum:** The stock is trading in a stable zone without extreme volatility."
 
-                # Final Verdict Generation
-                st.markdown("### 🧠 Automated Analyst Verdict")
-                if score >= 3:
-                    st.success("### Verdict: STRONG BUY (Accumulate)")
-                    st.write("This asset shows strong fundamental valuation combined with favorable technical momentum. Good for immediate accumulation.")
-                elif score == 2:
-                    st.info("### Verdict: HOLD / SIP")
-                    st.write("A decent quality asset but current price points suggest staggered buying (SIP) rather than lumpsum investment.")
+                    st.markdown("---")
+                    if score >= 3:
+                        st.success("### Verdict: STRONG BUY (Accumulate)")
+                        st.write("This asset shows strong fundamental valuation combined with favorable technical momentum. Good for immediate accumulation.")
+                    elif score == 2:
+                        st.info("### Verdict: HOLD / SIP")
+                        st.write("A decent quality asset but current price points suggest staggered buying (SIP) rather than lumpsum investment.")
+                    else:
+                        st.warning("### Verdict: CAUTION / SELL")
+                        st.write("Risk-reward ratio is currently unfavorable. It is either technically overbought or fundamentally overpriced. Wait for a correction.")
+                    
+                    st.markdown("### 📊 Detailed Justification")
+                    st.markdown(val_msg)
+                    st.markdown(tech_msg)
+                    if roe > 15: st.markdown(f"✅ **Strong Management:** Generating excellent Return on Equity ({roe:.2f}%).")
+                    if debt < 50: st.markdown("✅ **Safe Balance Sheet:** Low debt-to-equity ratio makes it fundamentally strong.")
+                    st.caption("Disclaimer: This algorithmic report is based on current technical and fundamental data. Consult a registered financial advisor before trading.")
                 else:
-                    st.warning("### Verdict: CAUTION / SELL")
-                    st.write("Risk-reward ratio is currently unfavorable. It is either technically overbought or fundamentally overpriced. Wait for a correction.")
-                
-                st.markdown("---")
-                st.markdown("### 📊 Detailed Justification")
-                st.markdown(val_msg)
-                st.markdown(tech_msg)
-                if roe > 15: st.markdown(f"✅ **Strong Management:** Generating excellent Return on Equity ({roe:.2f}%).")
-                if debt < 50: st.markdown("✅ **Safe Balance Sheet:** Low debt-to-equity ratio makes it fundamentally strong.")
-                
-                st.markdown("---")
-                st.caption("Disclaimer: This algorithmic report is based on current technical and fundamental data. Markets are subject to macroeconomic risks. Consult a registered financial advisor before trading.")
+                    st.error("❌ Invalid Access Code. Please check the spelling or upgrade to Premium.")
 
     else:
         st.error("⚠️ Invalid Stock Symbol. Please verify the ticker.")
