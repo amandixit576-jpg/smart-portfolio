@@ -12,7 +12,7 @@ def premium_signup():
     st.markdown("Join **Dixit Capital Premium** for advanced audits, live alerts, and portfolio management.")
     
     # YAHAN APNA ASLI WHATSAPP NUMBER DAALIYE (Country code 91 ke sath, bina + lagaye)
-    YOUR_WHATSAPP_NUMBER = "919876543210" # Example: "919988776655"
+    YOUR_WHATSAPP_NUMBER = "917052360459" # Example: "919988776655"
     
     name = st.text_input("Full Name")
     city = st.text_input("City")
@@ -178,3 +178,4 @@ else:
                 st.write("Could not load news at this time.")
     else:
         st.error("⚠️ Invalid Stock Symbol. Please check the spelling or enter a valid NSE ticker.")
+
