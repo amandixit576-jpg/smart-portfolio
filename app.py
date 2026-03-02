@@ -188,4 +188,79 @@ else:
                 f2.metric("ROE", f"{round(info.get('returnOnEquity', 0)*100, 2)}%" if info.get('returnOnEquity') else "N/A")
                 f3.metric("Book Value", f"₹{round(info.get('bookValue', 0), 2)}" if info.get('bookValue') else "N/A")
                 f4.metric("Debt/Eq", round(info.get('debtToEquity', 0), 2) if info.get('debtToEquity') else "N/A")
-                st.caption(f"**Business Overview:** *{info.get
+                st.caption(f"**Business Overview:** *{info.get('longBusinessSummary', 'N/A')[:400]}...*")
+            else: st.warning("Fundamental data currently unavailable.")
+
+        with tab3:
+            live_news = get_live_news(display_name)
+            if live_news:
+                for n in live_news:
+                    st.markdown(f"🔹 **[{n['title']}]({n['link']})**")
+                    st.caption(f"🗞️ Source: {n['source']} | 🕒 {n['date']}")
+                    st.divider()
+            else: st.info("No recent news found.")
+
+        # --- THE PREMIUM QUANT REPORT ---
+        with tab4:
+            if not is_premium:
+                st.error("🔒 **Premium Feature Locked**")
+                st.info("Please enter the Premium Access Code in the sidebar to unlock algorithmic analysis, valuation checks, and future movement insights.")
+            else:
+                st.success("🔓 **Access Granted: Dixit Capital Quant Algorithm Running...**")
+                
+                # Logic Processing
+                pe = info.get('trailingPE', 0)
+                roe = info.get('returnOnEquity', 0) * 100 if info.get('returnOnEquity') else 0
+                debt = info.get('debtToEquity', 0)
+                
+                # Verdict Logic
+                score = 0
+                val_msg = ""
+                tech_msg = ""
+                
+                # Fundamental Valuation
+                if pe > 0 and pe < 20:
+                    score += 2
+                    val_msg = "✅ **Undervalued:** Trading at a discount compared to market averages."
+                elif pe >= 20 and pe < 40:
+                    score += 1
+                    val_msg = "⚖️ **Fairly Valued:** Priced reasonably for its growth expectations."
+                else:
+                    score -= 1
+                    val_msg = "⚠️ **Overpriced:** Trading at a high premium. High expectations are already baked into the price."
+
+                # Technical Momentum (RSI)
+                if current_rsi < 35:
+                    score += 2
+                    tech_msg = "📈 **Oversold:** The stock has seen heavy selling and might reverse upwards soon."
+                elif current_rsi > 65:
+                    score -= 1
+                    tech_msg = "📉 **Overbought:** The stock is running too hot. A short-term correction is highly likely."
+                else:
+                    score += 1
+                    tech_msg = "⚖️ **Neutral Momentum:** The stock is trading in a stable zone without extreme volatility."
+
+                # Final Verdict Generation
+                st.markdown("### 🧠 Automated Analyst Verdict")
+                if score >= 3:
+                    st.success("### Verdict: STRONG BUY (Accumulate)")
+                    st.write("This asset shows strong fundamental valuation combined with favorable technical momentum. Good for immediate accumulation.")
+                elif score == 2:
+                    st.info("### Verdict: HOLD / SIP")
+                    st.write("A decent quality asset but current price points suggest staggered buying (SIP) rather than lumpsum investment.")
+                else:
+                    st.warning("### Verdict: CAUTION / SELL")
+                    st.write("Risk-reward ratio is currently unfavorable. It is either technically overbought or fundamentally overpriced. Wait for a correction.")
+                
+                st.markdown("---")
+                st.markdown("### 📊 Detailed Justification")
+                st.markdown(val_msg)
+                st.markdown(tech_msg)
+                if roe > 15: st.markdown(f"✅ **Strong Management:** Generating excellent Return on Equity ({roe:.2f}%).")
+                if debt < 50: st.markdown("✅ **Safe Balance Sheet:** Low debt-to-equity ratio makes it fundamentally strong.")
+                
+                st.markdown("---")
+                st.caption("Disclaimer: This algorithmic report is based on current technical and fundamental data. Markets are subject to macroeconomic risks. Consult a registered financial advisor before trading.")
+
+    else:
+        st.error("⚠️ Invalid Stock Symbol. Please verify the ticker.")
