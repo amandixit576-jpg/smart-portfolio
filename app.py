@@ -10,7 +10,6 @@ import numpy as np
 # --- 1. PAGE SETUP & MEMORY ---
 st.set_page_config(page_title="Pro Terminal | Dixit Capital", layout="wide", initial_sidebar_state="expanded")
 
-# Initialize App Memory
 if 'current_view' not in st.session_state: st.session_state.current_view = "HOME"
 if 'portfolio' not in st.session_state: st.session_state.portfolio = pd.DataFrame(columns=["Ticker", "Buy Price", "Quantity"])
 
@@ -101,7 +100,7 @@ if st.session_state.current_view == "COMPARE":
         }
         st.table(pd.DataFrame(comp_data).set_index("Metric"))
 
-# --- 6. HOME PAGE (Search, Pulse, Portfolio) ---
+# --- 6. HOME PAGE (Search, Pulse, Calculator, Portfolio) ---
 elif st.session_state.current_view == "HOME":
     ht1, ht2 = st.tabs(["🔍 Terminal Hub", "💼 My Virtual Portfolio"])
     
@@ -123,6 +122,28 @@ elif st.session_state.current_view == "HOME":
         m1, m2, m3, m4 = st.columns([1, 2, 2, 1])
         if nifty is not None and len(nifty) >= 2: m2.metric("NIFTY 50", f"{nifty['Close'].iloc[-1]:.2f}", f"{nifty['Close'].iloc[-1] - nifty['Close'].iloc[-2]:.2f}")
         if banknifty is not None and len(banknifty) >= 2: m3.metric("NIFTY BANK", f"{banknifty['Close'].iloc[-1]:.2f}", f"{banknifty['Close'].iloc[-1] - banknifty['Close'].iloc[-2]:.2f}")
+        
+        st.write("---")
+        
+        # --- RETURN OF THE SIP CALCULATOR ---
+        st.markdown("<h4 style='text-align: center;'>💰 SIP Wealth Calculator</h4>", unsafe_allow_html=True)
+        st.markdown("<p style='text-align: center; color: gray;'>Plan your financial independence.</p>", unsafe_allow_html=True)
+        
+        calc_col1, calc_col2 = st.columns([1, 2])
+        with calc_col1:
+            sip_amount = st.number_input("Monthly SIP (₹)", min_value=500, value=5000, step=500)
+            sip_years = st.slider("Investment Period (Years)", 1, 30, 10)
+            sip_rate = st.slider("Expected Annual Return (%)", 5, 25, 12)
+        with calc_col2:
+            monthly_rate = sip_rate / 12 / 100
+            months = sip_years * 12
+            invested_amount = sip_amount * months
+            future_value = sip_amount * (((1 + monthly_rate)**months - 1) / monthly_rate) * (1 + monthly_rate)
+            st.success(f"### Estimated Wealth: ₹{future_value:,.0f}")
+            w_col1, w_col2 = st.columns(2)
+            w_col1.metric("Total Invested", f"₹{invested_amount:,.0f}")
+            w_col2.metric("Est. Wealth Gained", f"₹{future_value - invested_amount:,.0f}")
+            st.progress(min(invested_amount / future_value, 1.0), text="Investment vs Growth Ratio")
         
     with ht2:
         st.markdown("### 💼 Paper Trading Portfolio")
