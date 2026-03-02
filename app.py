@@ -10,36 +10,41 @@ import numpy as np
 # --- 1. PAGE SETUP ---
 st.set_page_config(page_title="Pro Terminal | Dixit Capital", layout="wide", initial_sidebar_state="expanded")
 
-st.markdown("""
-    <style>
-    .block-container { padding-top: 2rem; padding-bottom: 2rem; }
-    hr { margin-top: 1rem; margin-bottom: 2rem; border-color: #333; }
-    </style>
-""", unsafe_allow_html=True)
-
-# --- 2. LEAD GENERATION (WHATSAPP) ---
-@st.dialog("Request Premium Advisory")
+# --- 2. LEAD GENERATION (WHATSAPP INTEGRATED) ---
+@st.dialog("👑 Unlock Premium Access")
 def premium_signup():
     st.markdown("Join **Dixit Capital Premium** to get the access code for our AI Quant Analyst.")
+    
+    # Aapka exact WhatsApp number
     YOUR_WHATSAPP_NUMBER = "917052360459" 
+    
     name = st.text_input("Full Name")
     city = st.text_input("City")
+    
     st.write("---")
+    
     if name and city:
-        raw_message = f"Hello Dixit Capital.\n\nI want to purchase the Premium Access Code for the Quant Analyst tool.\nName: {name}\nCity: {city}"
+        raw_message = f"Hello Dixit Capital! 📈\n\nI want to purchase the Premium Access Code for the Quant Analyst tool.\nName: {name}\nCity: {city}"
         encoded_message = urllib.parse.quote(raw_message)
         whatsapp_url = f"https://wa.me/{YOUR_WHATSAPP_NUMBER}?text={encoded_message}"
-        st.link_button("Chat with Team to get Code", whatsapp_url, type="primary", use_container_width=True)
+        
+        st.link_button("📲 Chat with Team to get Code", whatsapp_url, type="primary", use_container_width=True)
     else:
-        st.button("Chat with Team to get Code", type="primary", disabled=True, use_container_width=True)
+        st.button("📲 Chat with Team to get Code", type="primary", disabled=True, use_container_width=True)
+        st.caption("⚠️ Please enter your Name and City to unlock the button.")
 
-# --- 3. PREMIUM BRANDING ---
-st.markdown("<h1 style='text-align: center; font-weight: 300; letter-spacing: 3px; font-family: sans-serif;'>DIXIT CAPITAL</h1>", unsafe_allow_html=True)
-st.markdown("<p style='text-align: center; color: #888; font-size: 13px; letter-spacing: 2px;'>WEALTH MANAGEMENT & QUANTITATIVE ANALYSIS</p><hr>", unsafe_allow_html=True)
+# --- 3. BRANDING (Purana Bold & Vibrant Look) ---
+st.markdown("""
+    <div style='text-align: center; padding: 10px;'>
+        <h1 style='color: #1E88E5; font-family: "Arial Black", sans-serif;'>🏢 Dixit Capital & Wealth Management</h1>
+        <p style='font-style: italic; color: #888888; font-size: 18px;'>Advanced Quantitative Analysis & Portfolio Tracking</p>
+    </div>
+    <hr>
+""", unsafe_allow_html=True)
 
 # --- 4. TOP STOCKS LIST ---
 TOP_STOCKS = {
-    "HOME": "Home Dashboard",
+    "HOME": "🏠 Home (Dashboard & Tools)",
     "RELIANCE.NS": "Reliance Industries",
     "TCS.NS": "Tata Consultancy Services",
     "HDFCBANK.NS": "HDFC Bank",
@@ -52,9 +57,9 @@ TOP_STOCKS = {
 }
 
 # --- 5. SIDEBAR & SEARCH ---
-st.sidebar.markdown("### Main Menu")
+st.sidebar.header("⚙️ Main Menu")
 
-if st.sidebar.button("Upgrade to Premium", use_container_width=True):
+if st.sidebar.button("👑 Upgrade to Premium", use_container_width=True):
     premium_signup()
 
 st.sidebar.markdown("---")
@@ -63,15 +68,15 @@ premium_code = st.sidebar.text_input("🔑 Premium Access Code:", type="password
 is_premium = True if premium_code == "AMANPRO" else False
 
 st.sidebar.markdown("---")
-st.sidebar.markdown("**Equity Search**")
+st.sidebar.subheader("🔍 Equity Search")
 
 selected_ticker = st.sidebar.selectbox(
-    "Select Asset:",
+    "Search or Select Stock:",
     options=list(TOP_STOCKS.keys()),
     format_func=lambda x: TOP_STOCKS[x] if x == "HOME" else f"{TOP_STOCKS[x]} ({x.replace('.NS', '')})"
 )
 
-manual_ticker = st.sidebar.text_input("Or enter NSE symbol (e.g., ITC):", "")
+manual_ticker = st.sidebar.text_input("Or type NSE symbol (e.g., ITC):", "")
 
 if manual_ticker:
     raw_ticker = manual_ticker.upper()
@@ -105,11 +110,11 @@ def get_live_news(company_name):
 
 # --- 6. HOME DASHBOARD ---
 if user_ticker == "HOME":
-    st.markdown("<h3 style='text-align: center; font-weight: 400;'>Terminal Overview</h3>", unsafe_allow_html=True)
+    st.markdown("<h3 style='text-align: center;'>Welcome to the Pro Terminal</h3>", unsafe_allow_html=True)
     nifty = get_index_data("^NSEI")
     banknifty = get_index_data("^NSEBANK")
     
-    st.markdown("#### Market Pulse")
+    st.markdown("#### 📡 Live Market Pulse")
     col1, col2, col3 = st.columns(3)
     if nifty is not None and len(nifty) >= 2:
         n_curr, n_prev = nifty['Close'].iloc[-1], nifty['Close'].iloc[-2]
@@ -117,24 +122,26 @@ if user_ticker == "HOME":
     if banknifty is not None and len(banknifty) >= 2:
         bn_curr, bn_prev = banknifty['Close'].iloc[-1], banknifty['Close'].iloc[-2]
         col2.metric("NIFTY BANK", f"{bn_curr:.2f}", f"{bn_curr - bn_prev:.2f} ({(bn_curr - bn_prev)/bn_prev * 100:.2f}%)")
-    col3.caption("Select an asset from the sidebar to begin technical and fundamental analysis.")
+    col3.info("👈 Select a stock from the sidebar to view detailed technicals and fundamentals.")
     st.divider()
 
-    st.markdown("#### Wealth Projection")
+    st.markdown("#### 💰 SIP Wealth Calculator")
+    st.caption("Plan your financial independence with our institutional-grade calculator.")
     calc_col1, calc_col2 = st.columns([1, 2])
     with calc_col1:
-        sip_amount = st.number_input("Monthly Investment (₹)", min_value=500, value=5000, step=500)
-        sip_years = st.slider("Duration (Years)", 1, 30, 10)
-        sip_rate = st.slider("Est. Annual Return (%)", 5, 25, 12)
+        sip_amount = st.number_input("Monthly SIP (₹)", min_value=500, value=5000, step=500)
+        sip_years = st.slider("Investment Period (Years)", 1, 30, 10)
+        sip_rate = st.slider("Expected Annual Return (%)", 5, 25, 12)
     with calc_col2:
         monthly_rate = sip_rate / 12 / 100
         months = sip_years * 12
         invested_amount = sip_amount * months
         future_value = sip_amount * (((1 + monthly_rate)**months - 1) / monthly_rate) * (1 + monthly_rate)
-        st.markdown(f"### Projected Value: ₹{future_value:,.0f}")
+        st.success(f"### Estimated Wealth: ₹{future_value:,.0f}")
         w_col1, w_col2 = st.columns(2)
-        w_col1.metric("Capital Invested", f"₹{invested_amount:,.0f}")
-        w_col2.metric("Estimated Returns", f"₹{future_value - invested_amount:,.0f}")
+        w_col1.metric("Total Invested", f"₹{invested_amount:,.0f}")
+        w_col2.metric("Est. Wealth Gained", f"₹{future_value - invested_amount:,.0f}")
+        st.progress(min(invested_amount / future_value, 1.0), text="Investment vs Growth Ratio")
 
 # --- 7. STOCK ANALYSIS ENGINE ---
 else:
@@ -171,7 +178,7 @@ else:
         data['SMA200'] = data['Close'].rolling(200).mean()
         
         # Tabs system including Premium
-        tab1, tab2, tab3, tab4 = st.tabs(["📊 Chart", "📋 Fundamentals", "📰 News", "💎 AI Quant Report (Premium)"])
+        tab1, tab2, tab3, tab4 = st.tabs(["📊 Technical Chart", "📋 Fundamental Audit", "📰 Live News", "💎 AI Quant Report (Premium)"])
 
         with tab1:
             fig = go.Figure()
@@ -188,6 +195,7 @@ else:
                 f2.metric("ROE", f"{round(info.get('returnOnEquity', 0)*100, 2)}%" if info.get('returnOnEquity') else "N/A")
                 f3.metric("Book Value", f"₹{round(info.get('bookValue', 0), 2)}" if info.get('bookValue') else "N/A")
                 f4.metric("Debt/Eq", round(info.get('debtToEquity', 0), 2) if info.get('debtToEquity') else "N/A")
+                st.write("---")
                 st.caption(f"**Business Overview:** *{info.get('longBusinessSummary', 'N/A')[:400]}...*")
             else: st.warning("Fundamental data currently unavailable.")
 
