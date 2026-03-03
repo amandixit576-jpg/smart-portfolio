@@ -7,91 +7,33 @@ import xml.etree.ElementTree as ET
 import pandas as pd
 
 # --- 1. PAGE SETUP & MEMORY ---
-st.set_page_config(page_title="Dixit Investment Group | Premium Terminal", layout="wide", initial_sidebar_state="collapsed")
+st.set_page_config(page_title="Dixit Investment Group | Pro Terminal", layout="wide", initial_sidebar_state="expanded")
 
 if 'current_view' not in st.session_state: st.session_state.current_view = "HOME"
 if 'portfolio' not in st.session_state: st.session_state.portfolio = pd.DataFrame(columns=["Ticker", "Buy Price", "Quantity"])
 
-# --- PREMIUM CSS INJECTION (Navy Blue & Gold + Serif Fonts) ---
+# Clean, default Streamlit CSS (No weird fonts or colors)
 st.markdown("""
     <style>
-    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;1,700&family=Inter:wght@300;400;600&display=swap');
-    
-    html, body, [class*="css"] {
-        font-family: 'Inter', sans-serif;
-    }
-    
     .block-container { padding-top: 1rem; padding-bottom: 2rem; }
-    hr { border-color: #E0E0E0; }
-    
-    /* Big Home Banner */
-    .hero-banner {
-        background-color: #0B1C2E; /* Deep Navy Blue */
-        padding: 40px 20px;
-        border-radius: 8px;
-        border-bottom: 4px solid #D4AF37; /* Royal Gold */
-        text-align: center;
-        margin-bottom: 20px;
-    }
-    .brand-title {
-        font-family: 'Playfair Display', serif;
-        color: #D4AF37;
-        font-size: 3.5rem;
-        margin-bottom: 0px;
-        font-weight: 700;
-        letter-spacing: 1px;
-    }
-    .brand-tagline {
-        color: #FFFFFF;
-        font-size: 1.2rem;
-        font-weight: 300;
-        margin-top: 5px;
-        letter-spacing: 2px;
-    }
-    
-    /* Small Top-Left Logo for other pages */
-    .small-logo {
-        font-family: 'Playfair Display', serif;
-        color: #0B1C2E;
-        font-size: 28px;
-        font-weight: 700;
-        border-bottom: 2px solid #D4AF37;
-        display: inline-block;
-        padding-bottom: 5px;
-        margin-bottom: 15px;
-    }
-    .small-logo span { color: #D4AF37; }
-    
-    /* Premium Button Styling */
-    div.stButton > button {
-        background-color: #0B1C2E;
-        color: #D4AF37;
-        border: 1px solid #D4AF37;
-        border-radius: 4px;
-        font-weight: 600;
-        transition: all 0.3s;
-    }
-    div.stButton > button:hover {
-        background-color: #D4AF37;
-        color: #0B1C2E;
-        border: 1px solid #0B1C2E;
-    }
+    hr { margin-top: 1rem; margin-bottom: 1.5rem; border-color: #e0e0e0; }
+    a { text-decoration: none !important; color: inherit !important; }
     </style>
 """, unsafe_allow_html=True)
 
 # --- 2. LEAD GENERATION (WHATSAPP) ---
-@st.dialog("Unlock Institutional Access")
+@st.dialog("👑 Unlock Premium Access")
 def premium_signup():
-    st.markdown("Join **Dixit Investment Group** for algorithmic access & deeper fundamental models.")
+    st.markdown("Join **Dixit Investment Group** for algorithmic access & fundamental models.")
     YOUR_WHATSAPP_NUMBER = "917052360459" 
     name = st.text_input("Full Name")
     city = st.text_input("City")
     if name and city:
         raw_message = f"Hello Dixit Investment Group! 📈\n\nI want to purchase the Premium Access Code.\nName: {name}\nCity: {city}"
         whatsapp_url = f"https://wa.me/{YOUR_WHATSAPP_NUMBER}?text={urllib.parse.quote(raw_message)}"
-        st.link_button("📲 Connect with Advisor", whatsapp_url, type="primary", use_container_width=True)
+        st.link_button("📲 Chat to get Code", whatsapp_url, type="primary", use_container_width=True)
     else:
-        st.button("📲 Connect with Advisor", type="primary", disabled=True, use_container_width=True)
+        st.button("📲 Chat to get Code", type="primary", disabled=True, use_container_width=True)
 
 # --- 3. TOP MARKET BAR ---
 @st.cache_data(ttl=300)
@@ -106,7 +48,7 @@ def display_index(col, name, data):
     if data is not None and len(data) >= 2:
         curr, prev = data['Close'].iloc[-1], data['Close'].iloc[-2]
         chg, pct = curr - prev, ((curr - prev)/prev)*100
-        color = "#2E7D32" if chg >= 0 else "#C62828" # Muted professional green/red
+        color = "green" if chg >= 0 else "red"
         col.markdown(f"**{name}**: {curr:.2f} <span style='color:{color};'>({pct:.2f}%)</span>", unsafe_allow_html=True)
 
 display_index(m2, "SENSEX", sensex)
@@ -117,7 +59,7 @@ st.write("---")
 TOP_STOCKS = {"RELIANCE.NS": "Reliance", "TCS.NS": "TCS", "HDFCBANK.NS": "HDFC Bank", "INFY.NS": "Infosys", "ZOMATO.NS": "Zomato", "ITC.NS": "ITC", "SBIN.NS": "SBI"}
 
 # --- 4. SIDEBAR MENU ---
-st.sidebar.markdown("<h2 style='font-family: Playfair Display; color: #D4AF37;'>DIG Menu</h2>", unsafe_allow_html=True)
+st.sidebar.header("⚙️ Main Menu")
 if st.sidebar.button("🏠 Home Dashboard", use_container_width=True): st.session_state.current_view = "HOME"; st.rerun()
 if st.sidebar.button("⚖️ Peer Comparison", use_container_width=True): st.session_state.current_view = "COMPARE"; st.rerun()
 st.sidebar.markdown("<br>", unsafe_allow_html=True)
@@ -134,16 +76,17 @@ def get_live_news(company_name):
 
 # --- 5. PEER COMPARISON VIEW ---
 if st.session_state.current_view == "COMPARE":
-    st.markdown("<div class='small-logo'>Dixit <span>Investment Group</span></div>", unsafe_allow_html=True)
+    # Small Top-Left Branding
+    st.markdown("<h3 style='color:#1E88E5; margin-top:-20px;'>🏢 Dixit Investment Group</h3>", unsafe_allow_html=True)
     st.markdown("### ⚖️ Peer-to-Peer Asset Comparison")
-    if st.button("⬅️ Back to Terminal Hub"): st.session_state.current_view = "HOME"; st.rerun()
+    if st.button("⬅️ Back to Home Engine"): st.session_state.current_view = "HOME"; st.rerun()
     st.write("---")
     
     c1, c2 = st.columns(2)
     with c1: t1 = st.selectbox("Select Asset 1:", list(TOP_STOCKS.keys()), index=0)
     with c2: t2 = st.selectbox("Select Asset 2:", list(TOP_STOCKS.keys()), index=2)
     
-    if st.button("Run Institutional Comparison 🚀", type="primary"):
+    if st.button("Run Comparison 🚀", type="primary"):
         i1, i2 = yf.Ticker(t1).info, yf.Ticker(t2).info
         comp_data = {
             "Metric": ["Price", "P/E Ratio", "ROE (%)", "Debt to Equity", "Market Cap (Cr)"],
@@ -152,27 +95,27 @@ if st.session_state.current_view == "COMPARE":
         }
         st.table(pd.DataFrame(comp_data).set_index("Metric"))
 
-# --- 6. HOME PAGE (Massive Branding, Search, Calc, Portfolio) ---
+# --- 6. HOME PAGE (Search, Trending, Calc, Portfolio) ---
 elif st.session_state.current_view == "HOME":
     
-    # BIG HOME BANNER
+    # BIG HOME BRANDING
     st.markdown("""
-        <div class="hero-banner">
-            <h1 class="brand-title">Dixit Investment Group</h1>
-            <p class="brand-tagline">A Premium Wealth & Portfolio Management Company</p>
+        <div style='text-align: center; padding: 20px;'>
+            <h1 style='color: #1E88E5; font-size: 3.5rem; margin-bottom: 0px;'>🏢 Dixit Investment Group</h1>
+            <p style='color: #555; font-size: 1.2rem; font-weight: bold;'>A premium wealth and portfolio management company</p>
         </div>
     """, unsafe_allow_html=True)
     
     col1, col2, col3 = st.columns([1, 2, 1])
     with col2:
-        man_t = st.text_input("🔍 Type a Company Name or NSE Symbol (e.g., ITC)", placeholder="Search asset to analyze...")
+        man_t = st.text_input("🔍 Type a Company Name or NSE Symbol (e.g., ITC)", placeholder="Search for a company...")
         if st.button("Run Fundamental Audit", type="primary", use_container_width=True):
             if man_t:
                 st.session_state.current_view = man_t.upper() if man_t.upper().endswith(".NS") else f"{man_t.upper()}.NS"
                 st.rerun()
         
         st.markdown("<br>", unsafe_allow_html=True)
-        st.markdown("<p style='text-align: center; color: #0B1C2E; font-weight: bold;'>Institutional Watchlist:</p>", unsafe_allow_html=True)
+        st.markdown("<p style='text-align: center; font-weight: bold;'>What's Trending:</p>", unsafe_allow_html=True)
         t1, t2, t3, t4, t5 = st.columns(5)
         if t1.button("RELIANCE", use_container_width=True): st.session_state.current_view = "RELIANCE.NS"; st.rerun()
         if t2.button("HDFCBANK", use_container_width=True): st.session_state.current_view = "HDFCBANK.NS"; st.rerun()
@@ -182,7 +125,8 @@ elif st.session_state.current_view == "HOME":
 
     st.write("---")
     
-    ht1, ht2 = st.tabs(["💰 Wealth Calculator", "💼 Managed Portfolio (Virtual)"])
+    # ALL HOME FEATURES RESTORED
+    ht1, ht2 = st.tabs(["💰 SIP Wealth Calculator", "💼 My Virtual Portfolio"])
     with ht1:
         calc_col1, calc_col2 = st.columns([1, 2])
         with calc_col1:
@@ -194,10 +138,10 @@ elif st.session_state.current_view == "HOME":
             months = sip_years * 12
             invested = sip_amount * months
             fv = sip_amount * (((1 + monthly_rate)**months - 1) / monthly_rate) * (1 + monthly_rate)
-            st.success(f"### Estimated Value: ₹{fv:,.0f}")
+            st.success(f"### Estimated Wealth: ₹{fv:,.0f}")
             w1, w2 = st.columns(2)
-            w1.metric("Capital Deployed", f"₹{invested:,.0f}")
-            w2.metric("Projected Gains", f"₹{fv - invested:,.0f}")
+            w1.metric("Total Invested", f"₹{invested:,.0f}")
+            w2.metric("Est. Wealth Gained", f"₹{fv - invested:,.0f}")
 
     with ht2:
         pc1, pc2, pc3, pc4 = st.columns(4)
@@ -206,9 +150,9 @@ elif st.session_state.current_view == "HOME":
         with pc3: p_buy = st.number_input("Buy Price (₹)", min_value=1.0, value=100.0)
         with pc4: 
             st.write("")
-            if st.button("➕ Execute Trade", use_container_width=True):
+            if st.button("➕ Add Trade", use_container_width=True):
                 st.session_state.portfolio = pd.concat([st.session_state.portfolio, pd.DataFrame({"Ticker": [p_tick], "Buy Price": [p_buy], "Quantity": [p_qty]})], ignore_index=True)
-                st.success("Trade Recorded!")
+                st.success("Trade Added!")
         if not st.session_state.portfolio.empty:
             df_port = st.session_state.portfolio.copy()
             df_port["Live Price"] = [yf.Ticker(t).history(period="1d")['Close'].iloc[-1] if not yf.Ticker(t).history(period="1d").empty else 0 for t in df_port["Ticker"]]
@@ -222,8 +166,8 @@ else:
     user_ticker = st.session_state.current_view
     
     # Small Top-Left Branding
-    st.markdown("<div class='small-logo'>Dixit <span>Investment Group</span></div>", unsafe_allow_html=True)
-    if st.button("⬅️ Back to Terminal Hub"): st.session_state.current_view = "HOME"; st.rerun()
+    st.markdown("<h3 style='color:#1E88E5; margin-top:-20px;'>🏢 Dixit Investment Group</h3>", unsafe_allow_html=True)
+    if st.button("⬅️ Back to Home Search"): st.session_state.current_view = "HOME"; st.rerun()
     st.write("---")
     
     t_obj = yf.Ticker(user_ticker)
@@ -235,23 +179,22 @@ else:
         curr_price, prev_price = data['Close'].iloc[-1], data['Close'].iloc[-2]
         
         c1, c2 = st.columns([3, 1])
-        c1.markdown(f"<h1 style='color:#0B1C2E; font-family: Playfair Display;'>{display_name}</h1>", unsafe_allow_html=True)
-        c2.metric("Last Traded Price", f"₹{curr_price:.2f}", f"{(curr_price - prev_price):.2f} ({((curr_price - prev_price)/prev_price)*100:.2f}%)")
+        c1.markdown(f"<h2>{display_name}</h2>", unsafe_allow_html=True)
+        c2.metric("Current Price", f"₹{curr_price:.2f}", f"{(curr_price - prev_price):.2f} ({((curr_price - prev_price)/prev_price)*100:.2f}%)")
 
         data['SMA50'] = data['Close'].rolling(50).mean()
         
-        # ALL 7 TABS
+        # ALL 7 TABS RESTORED
         tab1, tab2, tab3, tab4, tab5, tab6, tab7 = st.tabs(["📊 Price Chart", "📋 Ratios & Whales", "📑 Financials", "🏢 Corp Actions", "📰 Live News", "💎 AI Quant", "📥 Export"])
 
         with tab1:
             fig = go.Figure(data=[go.Candlestick(x=data.index, open=data['Open'], high=data['High'], low=data['Low'], close=data['Close'])])
-            # Chart colors updated to match the Gold/Navy premium theme
-            fig.add_trace(go.Scatter(x=data.index, y=data['SMA50'], line=dict(color='#D4AF37', width=2), name='50 SMA (Gold)'))
+            fig.add_trace(go.Scatter(x=data.index, y=data['SMA50'], line=dict(color='orange'), name='50 SMA'))
             fig.update_layout(template="plotly_white", margin=dict(t=10, b=10, l=10, r=10), height=500, xaxis_rangeslider_visible=False)
             st.plotly_chart(fig, use_container_width=True)
 
         with tab2:
-            st.markdown("<h3 style='color: #0B1C2E;'>Key Metrics</h3>", unsafe_allow_html=True)
+            st.markdown("### Key Metrics")
             f1, f2, f3, f4 = st.columns(4)
             f1.metric("Market Cap (Cr)", f"₹{round(info.get('marketCap', 0)/10000000, 2)}" if info.get('marketCap') else "N/A")
             f2.metric("P/E Ratio", round(info.get('trailingPE', 0), 2) if info.get('trailingPE') else "N/A")
@@ -259,13 +202,13 @@ else:
             f4.metric("Debt/Equity", round(info.get('debtToEquity', 0), 2) if info.get('debtToEquity') else "N/A")
             
             st.write("---")
-            st.markdown("<h3 style='color: #0B1C2E;'>🐋 Shareholding Pattern</h3>", unsafe_allow_html=True)
+            st.markdown("### 🐋 Shareholding Pattern")
             insider = round(info.get('heldPercentInsiders', 0) * 100, 2)
             inst = round(info.get('heldPercentInstitutions', 0) * 100, 2)
             st.write(f"**Promoters:** {insider}% | **Institutions (FII/DII):** {inst}% | **Public:** {100 - insider - inst}%")
 
         with tab3:
-            st.markdown("<h3 style='color: #0B1C2E;'>📑 Annual Financial Statements</h3>", unsafe_allow_html=True)
+            st.markdown("### 📑 Annual Financial Statements")
             stmt1, stmt2 = st.tabs(["Income Statement", "Balance Sheet"])
             with stmt1:
                 try:
@@ -281,7 +224,7 @@ else:
                 except: st.warning("Error fetching Balance Sheet.")
 
         with tab4:
-            st.markdown("<h3 style='color: #0B1C2E;'>📅 Recent Corporate Actions</h3>", unsafe_allow_html=True)
+            st.markdown("### 📅 Recent Dividends & Corporate Actions")
             try:
                 divs = t_obj.dividends.tail(5)
                 if not divs.empty: st.write(divs)
@@ -289,7 +232,7 @@ else:
             except: st.warning("Corporate action data unavailable.")
 
         with tab5:
-            st.markdown("<h3 style='color: #0B1C2E;'>📰 Live Market News</h3>", unsafe_allow_html=True)
+            st.markdown("### 📰 Live Market News")
             live_news = get_live_news(display_name)
             if live_news:
                 for n in live_news:
@@ -309,8 +252,8 @@ else:
             elif entered_code: st.error("❌ Invalid Code.")
 
         with tab7:
-            st.markdown("<h3 style='color: #0B1C2E;'>📥 Download Institutional Report</h3>", unsafe_allow_html=True)
+            st.markdown("### 📥 Download Institutional Report")
             report_df = pd.DataFrame({"Metric": ["Company", "Price", "P/E", "ROE", "Debt/Eq"], "Value": [display_name, curr_price, info.get('trailingPE'), info.get('returnOnEquity'), info.get('debtToEquity')]})
-            st.download_button(label="Download CSV", data=report_df.to_csv(index=False).encode('utf-8'), file_name=f"{user_ticker}_DIG_Report.csv", mime="text/csv", type="primary")
+            st.download_button(label="Download CSV", data=report_df.to_csv(index=False).encode('utf-8'), file_name=f"{user_ticker}_Report.csv", mime="text/csv", type="primary")
 
     else: st.error("⚠️ Invalid Asset Symbol. Try searching something like 'TCS'.")
