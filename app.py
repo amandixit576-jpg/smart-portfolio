@@ -28,6 +28,9 @@ st.markdown("""
     .sub-title { text-align: center; color: #555; font-size: 1.2rem; font-weight: 600; margin-top: 5px; margin-bottom: 30px; }
     a { text-decoration: none !important; color: inherit !important; }
     th { text-align: left !important; background-color: rgba(150, 150, 150, 0.1); }
+    /* Thematic Basket Cards */
+    .basket-card { border: 1px solid #ddd; padding: 15px; border-radius: 10px; background: #f8f9fa; text-align: center; margin-bottom: 10px; }
+    .basket-title { color: #1E88E5; font-weight: 700; font-size: 1.2rem; }
     </style>
 """, unsafe_allow_html=True)
 
@@ -106,6 +109,7 @@ def premium_signup():
 
 st.sidebar.markdown("<h3 style='color:#1E88E5;'>DIG Menu</h3>", unsafe_allow_html=True)
 if st.sidebar.button("🏠 Home Dashboard", use_container_width=True): st.session_state.current_view = "HOME"; st.rerun()
+if st.sidebar.button("🧺 Theme Baskets", use_container_width=True): st.session_state.current_view = "BASKETS"; st.rerun()
 if st.sidebar.button("⚖️ Peer Comparison", use_container_width=True): st.session_state.current_view = "COMPARE"; st.rerun()
 if st.sidebar.button("📈 Mutual Funds", use_container_width=True): st.session_state.current_view = "MUTUAL_FUNDS"; st.rerun()
 st.sidebar.markdown("<br>", unsafe_allow_html=True)
@@ -195,6 +199,30 @@ elif st.session_state.current_view == "MUTUAL_FUNDS":
             else:
                 st.error("⚠️ Data not available for this Mutual Fund right now.")
 
+# --- 4.6 THEME BASKETS ---
+elif st.session_state.current_view == "BASKETS":
+    st.markdown("<h2 style='color:#1E88E5;'>🧺 Ready-Made Theme Baskets</h2>", unsafe_allow_html=True)
+    st.write("Invest in ideas, not just single stocks. Explore top sectors driving the economy.")
+    if st.button("⬅️ Back to Home Engine"): st.session_state.current_view = "HOME"; st.rerun()
+    st.write("---")
+
+    b1, b2, b3 = st.columns(3)
+    with b1:
+        st.markdown('<div class="basket-card"><div class="basket-title">🌱 Green Energy & EV</div><p>Tata Power, Suzlon, Adani Green, Tata Motors</p></div>', unsafe_allow_html=True)
+        if st.button("Analyze Green Energy", key="b_green", use_container_width=True):
+            st.session_state.current_view = "TATAPOWER.NS"
+            st.rerun()
+    with b2:
+        st.markdown('<div class="basket-card"><div class="basket-title">👑 Monopoly Stocks</div><p>IRCTC, IEX, CDSL, HAL</p></div>', unsafe_allow_html=True)
+        if st.button("Analyze Monopolies", key="b_mono", use_container_width=True):
+            st.session_state.current_view = "IRCTC.NS"
+            st.rerun()
+    with b3:
+        st.markdown('<div class="basket-card"><div class="basket-title">🏦 PSU Banking</div><p>SBI, PNB, Bank of Baroda, Canara Bank</p></div>', unsafe_allow_html=True)
+        if st.button("Analyze PSU Banks", key="b_psu", use_container_width=True):
+            st.session_state.current_view = "SBIN.NS"
+            st.rerun()
+
 # --- 5. HOME PAGE ---
 elif st.session_state.current_view == "HOME":
     st.markdown('<h1 class="main-title">Dixit Investment Group</h1>', unsafe_allow_html=True)
@@ -221,7 +249,7 @@ elif st.session_state.current_view == "HOME":
 
     st.write("---")
     
-    ht1, ht2 = st.tabs(["💰 SIP Wealth Calculator", "💼 My Virtual Portfolio"])
+    ht1, ht2 = st.tabs(["💰 SIP Wealth Calculator", "💼 My Virtual Portfolio & Taxes"])
     with ht1:
         calc_col1, calc_col2 = st.columns([1, 2])
         with calc_col1:
@@ -248,18 +276,24 @@ elif st.session_state.current_view == "HOME":
             if st.button("➕ Add Trade", use_container_width=True):
                 st.session_state.portfolio = pd.concat([st.session_state.portfolio, pd.DataFrame({"Ticker": [p_tick], "Buy Price": [p_buy], "Quantity": [p_qty]})], ignore_index=True)
                 st.success("Trade Added!")
+        
         if not st.session_state.portfolio.empty:
             df_port = st.session_state.portfolio.copy()
             df_port["Live Price"] = [yf.Ticker(t).history(period="1d")['Close'].iloc[-1] if not yf.Ticker(t).history(period="1d").empty else 0 for t in df_port["Ticker"]]
             df_port["Total Invested"] = df_port["Buy Price"] * df_port["Quantity"]
             df_port["Current Value"] = df_port["Live Price"] * df_port["Quantity"]
-            df_port["P&L (₹)"] = df_port["Current Value"] - df_port["Total Invested"]
+            df_port["Gross P&L (₹)"] = df_port["Current Value"] - df_port["Total Invested"]
+            
+            # --- NEW: STCG TAX ESTIMATOR (20%) ---
+            df_port["Est. STCG Tax (20%)"] = df_port["Gross P&L (₹)"].apply(lambda x: x * 0.20 if x > 0 else 0)
+            df_port["Net Post-Tax P&L"] = df_port["Gross P&L (₹)"] - df_port["Est. STCG Tax (20%)"]
             
             display_df = df_port.copy()
-            for col in ["Buy Price", "Live Price", "Total Invested", "Current Value", "P&L (₹)"]:
+            for col in ["Buy Price", "Live Price", "Total Invested", "Current Value", "Gross P&L (₹)", "Est. STCG Tax (20%)", "Net Post-Tax P&L"]:
                 display_df[col] = display_df[col].apply(lambda x: format_inr(round(x, 2)))
                 
             st.dataframe(display_df, use_container_width=True)
+            st.caption("ℹ️ *Tax estimator assumes Short-Term Capital Gains (STCG) at a flat 20% rate on profitable trades.*")
 
 # --- 6. STOCK ANALYSIS ENGINE ---
 else:
@@ -374,6 +408,22 @@ else:
             inst = round(info.get('heldPercentInstitutions', 0) * 100, 2)
             st.write(f"**Promoters:** {insider}% | **Institutions (FII/DII):** {inst}% | **Public:** {round(100 - insider - inst, 2)}%")
 
+            # --- NEW: FORENSIC AUDIT FLAGS ---
+            st.write("---")
+            st.markdown("### 🚨 Forensic Audit & Governance Flags")
+            ocf = info.get('operatingCashflow')
+            net_inc = info.get('netIncomeToCommon')
+            
+            if pd.notna(ocf) and pd.notna(net_inc) and ocf != 0:
+                if net_inc > 0 and ocf < 0:
+                    st.error("🚩 **Cash Flow Warning:** The company is reporting paper profits, but actual Operating Cash Flow is NEGATIVE.")
+                elif ocf > net_inc:
+                    st.success("✅ **Clean Earnings:** Operating Cash Flow is higher than Net Income, indicating high-quality earnings.")
+                else:
+                    st.info("⚖️ **Standard Earnings:** Cash flow aligns relatively closely with reported income.")
+            else:
+                st.info("No deep forensic cash flow data currently available for this asset via free servers.")
+
         with tab3:
             st.markdown("### 📑 Annual Financial Statements (In Crores)")
             st.caption("Figures are represented in ₹ Crores (Cr).")
@@ -416,7 +466,7 @@ else:
             if entered_code == "AMANPRO":
                 st.success("🔓 Premium Access Granted! Running Live Quant Models...")
                 
-                # --- NEW LIVE MOMENTUM SCANNER ---
+                # --- LIVE MOMENTUM SCANNER ---
                 st.write("#### 🎯 Today's High-Probability Breakout Setups")
                 st.caption("Disclaimer: These algorithms identify strong technical momentum (RSI > 60 & Price > 50 SMA). Always manage your risk.")
                 
@@ -458,7 +508,7 @@ else:
                 
                 st.write("---")
                 
-                # --- OLD VALUATION MODEL ---
+                # --- VALUATION MODEL ---
                 st.write("#### 📊 Asset Valuation Model (P/E Based)")
                 pe = info.get('trailingPE', 0)
                 if pe > 0 and pe < 20: st.success("✅ **Verdict: STRONG BUY** (Undervalued: Trading at discount).")
