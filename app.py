@@ -29,8 +29,9 @@ st.markdown("""
     a { text-decoration: none !important; color: inherit !important; }
     th { text-align: left !important; background-color: rgba(150, 150, 150, 0.1); }
     /* Thematic Basket Cards */
-    .basket-card { border: 1px solid #ddd; padding: 15px; border-radius: 10px; background: #f8f9fa; text-align: center; margin-bottom: 10px; }
-    .basket-title { color: #1E88E5; font-weight: 700; font-size: 1.2rem; }
+    .basket-card { border: 1px solid #ddd; padding: 15px; border-radius: 10px; background: #f8f9fa; text-align: center; margin-bottom: 10px; height: 130px; }
+    .basket-title { color: #1E88E5; font-weight: 700; font-size: 1.1rem; }
+    .basket-card p { font-size: 0.9rem; color: #666; margin-top: 5px; }
     </style>
 """, unsafe_allow_html=True)
 
@@ -199,29 +200,44 @@ elif st.session_state.current_view == "MUTUAL_FUNDS":
             else:
                 st.error("⚠️ Data not available for this Mutual Fund right now.")
 
-# --- 4.6 THEME BASKETS ---
+# --- 4.6 THEME BASKETS (EXPANDED) ---
 elif st.session_state.current_view == "BASKETS":
     st.markdown("<h2 style='color:#1E88E5;'>🧺 Ready-Made Theme Baskets</h2>", unsafe_allow_html=True)
-    st.write("Invest in ideas, not just single stocks. Explore top sectors driving the economy.")
+    st.write("Invest in ideas, not just single stocks. Explore top sectors and themes driving the market.")
     if st.button("⬅️ Back to Home Engine"): st.session_state.current_view = "HOME"; st.rerun()
     st.write("---")
 
+    # Row 1
     b1, b2, b3 = st.columns(3)
     with b1:
         st.markdown('<div class="basket-card"><div class="basket-title">🌱 Green Energy & EV</div><p>Tata Power, Suzlon, Adani Green, Tata Motors</p></div>', unsafe_allow_html=True)
         if st.button("Analyze Green Energy", key="b_green", use_container_width=True):
-            st.session_state.current_view = "TATAPOWER.NS"
-            st.rerun()
+            st.session_state.current_view = "TATAPOWER.NS"; st.rerun()
     with b2:
         st.markdown('<div class="basket-card"><div class="basket-title">👑 Monopoly Stocks</div><p>IRCTC, IEX, CDSL, HAL</p></div>', unsafe_allow_html=True)
         if st.button("Analyze Monopolies", key="b_mono", use_container_width=True):
-            st.session_state.current_view = "IRCTC.NS"
-            st.rerun()
+            st.session_state.current_view = "IRCTC.NS"; st.rerun()
     with b3:
         st.markdown('<div class="basket-card"><div class="basket-title">🏦 PSU Banking</div><p>SBI, PNB, Bank of Baroda, Canara Bank</p></div>', unsafe_allow_html=True)
         if st.button("Analyze PSU Banks", key="b_psu", use_container_width=True):
-            st.session_state.current_view = "SBIN.NS"
-            st.rerun()
+            st.session_state.current_view = "SBIN.NS"; st.rerun()
+            
+    st.write("")
+    
+    # Row 2 (New Personalised Baskets)
+    b4, b5, b6 = st.columns(3)
+    with b4:
+        st.markdown('<div class="basket-card"><div class="basket-title">🍃 Ethical & Cruelty-Free</div><p>Pure vegetarian FMCG & cruelty-free leaders (Tata Consumer, Dabur, Patanjali)</p></div>', unsafe_allow_html=True)
+        if st.button("Analyze Ethical Basket", key="b_ethical", use_container_width=True):
+            st.session_state.current_view = "TATACONSUM.NS"; st.rerun()
+    with b5:
+        st.markdown('<div class="basket-card"><div class="basket-title">💻 Tech & Innovation</div><p>IT Giants shaping the future (TCS, HCLTech, Infosys)</p></div>', unsafe_allow_html=True)
+        if st.button("Analyze Tech Basket", key="b_tech", use_container_width=True):
+            st.session_state.current_view = "HCLTECH.NS"; st.rerun()
+    with b6:
+        st.markdown('<div class="basket-card"><div class="basket-title">💰 Dividend Kings</div><p>Consistent high-yield cash generators (Coal India, ITC, Vedanta)</p></div>', unsafe_allow_html=True)
+        if st.button("Analyze Dividend Kings", key="b_div", use_container_width=True):
+            st.session_state.current_view = "COALINDIA.NS"; st.rerun()
 
 # --- 5. HOME PAGE ---
 elif st.session_state.current_view == "HOME":
@@ -249,19 +265,29 @@ elif st.session_state.current_view == "HOME":
 
     st.write("---")
     
-    ht1, ht2 = st.tabs(["💰 SIP Wealth Calculator", "💼 My Virtual Portfolio & Taxes"])
+    ht1, ht2 = st.tabs(["🎯 Goal-Based SIP Planner", "💼 My Virtual Portfolio & Taxes"])
     with ht1:
+        st.markdown("### Plan for your next milestone")
         calc_col1, calc_col2 = st.columns([1, 2])
         with calc_col1:
-            sip_amount = st.number_input("Monthly SIP (₹)", min_value=500, value=5000, step=500)
-            sip_years = st.slider("Investment Period (Years)", 1, 30, 10)
+            goal_type = st.selectbox("Select Financial Goal:", ["Custom Wealth Creation", "Himalayan Trek Fund (₹50k)", "Luxury Watch Fund (₹1.5L)", "Sibling's Setup Fund (₹10L)"])
+            
+            # Dynamic preset values based on goal
+            default_sip = 5000
+            default_years = 10
+            if "Trek" in goal_type: default_sip, default_years = 4000, 1
+            elif "Watch" in goal_type: default_sip, default_years = 6000, 2
+            elif "Sibling" in goal_type: default_sip, default_years = 12000, 5
+            
+            sip_amount = st.number_input("Monthly SIP (₹)", min_value=500, value=default_sip, step=500)
+            sip_years = st.slider("Investment Period (Years)", 1, 30, default_years)
             sip_rate = st.slider("Expected Annual Return (%)", 5, 25, 12)
         with calc_col2:
             monthly_rate = sip_rate / 12 / 100
             months = sip_years * 12
             invested = sip_amount * months
             fv = sip_amount * (((1 + monthly_rate)**months - 1) / monthly_rate) * (1 + monthly_rate)
-            st.success(f"### Estimated Wealth: ₹{format_inr(round(fv, 0))}")
+            st.success(f"### Estimated Goal Corpus: ₹{format_inr(round(fv, 0))}")
             w1, w2 = st.columns(2)
             w1.metric("Total Invested", f"₹{format_inr(round(invested, 0))}")
             w2.metric("Est. Wealth Gained", f"₹{format_inr(round(fv - invested, 0))}")
@@ -284,7 +310,6 @@ elif st.session_state.current_view == "HOME":
             df_port["Current Value"] = df_port["Live Price"] * df_port["Quantity"]
             df_port["Gross P&L (₹)"] = df_port["Current Value"] - df_port["Total Invested"]
             
-            # --- NEW: STCG TAX ESTIMATOR (20%) ---
             df_port["Est. STCG Tax (20%)"] = df_port["Gross P&L (₹)"].apply(lambda x: x * 0.20 if x > 0 else 0)
             df_port["Net Post-Tax P&L"] = df_port["Gross P&L (₹)"] - df_port["Est. STCG Tax (20%)"]
             
@@ -321,7 +346,7 @@ else:
 
         data['SMA50'] = data['Close'].rolling(50).mean()
         
-        tab1, tab2, tab3, tab4, tab5, tab6, tab7 = st.tabs(["📊 Price Chart", "📋 Pro Ratios & Whales", "📑 Financials (In Cr)", "🏢 Corp Actions", "📰 Live News", "💎 AI Quant", "📥 Export"])
+        tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8 = st.tabs(["📊 Price Chart", "📋 Pro Ratios & Whales", "📑 Financials (In Cr)", "🏢 Corp Actions", "📰 Live News", "💎 AI Quant", "📥 Export Mode", "🧑‍💼 CA's Audit Desk"])
 
         with tab1:
             st.markdown("### 📊 Advanced Technical Chart")
@@ -407,22 +432,6 @@ else:
             insider = round(info.get('heldPercentInsiders', 0) * 100, 2)
             inst = round(info.get('heldPercentInstitutions', 0) * 100, 2)
             st.write(f"**Promoters:** {insider}% | **Institutions (FII/DII):** {inst}% | **Public:** {round(100 - insider - inst, 2)}%")
-
-            # --- NEW: FORENSIC AUDIT FLAGS ---
-            st.write("---")
-            st.markdown("### 🚨 Forensic Audit & Governance Flags")
-            ocf = info.get('operatingCashflow')
-            net_inc = info.get('netIncomeToCommon')
-            
-            if pd.notna(ocf) and pd.notna(net_inc) and ocf != 0:
-                if net_inc > 0 and ocf < 0:
-                    st.error("🚩 **Cash Flow Warning:** The company is reporting paper profits, but actual Operating Cash Flow is NEGATIVE.")
-                elif ocf > net_inc:
-                    st.success("✅ **Clean Earnings:** Operating Cash Flow is higher than Net Income, indicating high-quality earnings.")
-                else:
-                    st.info("⚖️ **Standard Earnings:** Cash flow aligns relatively closely with reported income.")
-            else:
-                st.info("No deep forensic cash flow data currently available for this asset via free servers.")
 
         with tab3:
             st.markdown("### 📑 Annual Financial Statements (In Crores)")
@@ -519,8 +528,40 @@ else:
                 st.error("❌ Invalid Code.")
 
         with tab7:
-            st.markdown("### 📥 Download Institutional Report")
-            report_df = pd.DataFrame({"Metric": ["Company", "Price", "P/E", "ROE", "Debt/Eq"], "Value": [display_name, curr_price, info.get('trailingPE'), info.get('returnOnEquity'), info.get('debtToEquity')]})
-            st.download_button(label="Download CSV", data=report_df.to_csv(index=False).encode('utf-8'), file_name=f"{user_ticker}_Report.csv", mime="text/csv", type="primary")
+            st.markdown("### 📥 Creator Export Mode")
+            st.write("Generate a branded institutional report for your portfolio or audience.")
+            report_df = pd.DataFrame({
+                "Metric": ["Company", "Price", "P/E", "ROE", "Debt/Eq", "Analysis By"], 
+                "Value": [display_name, curr_price, info.get('trailingPE'), info.get('returnOnEquity'), info.get('debtToEquity'), "DIG Screener | 📸 @aman_creats"]
+            })
+            st.download_button(label="Download Branded CSV", data=report_df.to_csv(index=False).encode('utf-8'), file_name=f"{user_ticker}_DIG_Report.csv", mime="text/csv", type="primary")
+
+        with tab8:
+            st.markdown("### 🧑‍💼 CA's Audit Desk (Advanced Risk Lens)")
+            st.caption("Forensic level checks to identify working capital stress and governance red flags.")
+            
+            ocf = info.get('operatingCashflow')
+            net_inc = info.get('netIncomeToCommon')
+            
+            # Cash Flow Check
+            st.markdown("#### 1. Earnings Quality Check")
+            if pd.notna(ocf) and pd.notna(net_inc) and ocf != 0:
+                if net_inc > 0 and ocf < 0:
+                    st.error("🚩 **Red Flag:** The company is reporting paper profits, but actual Operating Cash Flow is NEGATIVE.")
+                elif ocf > net_inc:
+                    st.success("✅ **Clean:** Operating Cash Flow is higher than Net Income, indicating high-quality cash realization.")
+                else:
+                    st.info("⚖️ **Standard:** Cash flow aligns relatively closely with reported income.")
+            else:
+                st.info("Detailed cash flow audit data is currently unavailable on free tier.")
+                
+            # Current Ratio Check
+            st.markdown("#### 2. Liquidity Audit")
+            cr = info.get('currentRatio')
+            if pd.notna(cr):
+                if cr < 1: st.warning(f"⚠️ **Caution:** Current Ratio is {round(cr, 2)}. Short-term liabilities exceed short-term assets.")
+                else: st.success(f"✅ **Healthy:** Current Ratio is {round(cr, 2)}, indicating sufficient short-term liquidity.")
+            else:
+                st.write("Data not available.")
 
     else: st.error("⚠️ Invalid Asset Symbol. Try searching something like 'TCS'.")
