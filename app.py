@@ -5,43 +5,57 @@ import urllib.parse
 import urllib.request
 import xml.etree.ElementTree as ET
 import pandas as pd
+import numpy as np
 
-# --- 1. PAGE SETUP & MEMORY ---
-st.set_page_config(page_title="Dixit Capital | Pro Terminal", layout="wide", initial_sidebar_state="expanded")
+# --- 1. PAGE SETUP ---
+st.set_page_config(page_title="Dixit Investment Group | Pro Terminal", layout="wide", initial_sidebar_state="expanded")
 
 if 'current_view' not in st.session_state: st.session_state.current_view = "HOME"
 if 'portfolio' not in st.session_state: st.session_state.portfolio = pd.DataFrame(columns=["Ticker", "Buy Price", "Quantity"])
 
-# Clean, default CSS (No weird fonts or dark colors)
 st.markdown("""
     <style>
     .block-container { padding-top: 1rem; padding-bottom: 2rem; }
     hr { margin-top: 1rem; margin-bottom: 1.5rem; border-color: #e0e0e0; }
     a { text-decoration: none !important; color: inherit !important; }
+    /* Making dataframe headers look professional */
+    th { text-align: left !important; background-color: #f4f6f9; }
     </style>
 """, unsafe_allow_html=True)
 
-# Helper function for Indian Number Formatting
+# --- HELPER FUNCTIONS (INDIAN FORMATTING) ---
 def format_inr(number):
-    s, *d = str(number).partition(".")
-    r = ",".join([s[x-2:x] for x in range(-3, -len(s), -2)][::-1] + [s[-3:]])
-    return "".join([r] + d) if r else s
+    if pd.isna(number) or number is None: return "N/A"
+    try:
+        s, *d = str(round(float(number), 2)).partition(".")
+        r = ",".join([s[x-2:x] for x in range(-3, -len(s), -2)][::-1] + [s[-3:]])
+        return "".join([r] + d) if r else s
+    except: return str(number)
 
-# --- 2. LEAD GENERATION (WHATSAPP) ---
+def format_df_to_crores(df):
+    if df is None or df.empty: return df
+    formatted = df.copy()
+    for col in formatted.columns:
+        formatted[col] = pd.to_numeric(formatted[col], errors='coerce')
+        formatted[col] = formatted[col].apply(lambda x: f"{format_inr(x / 10000000)}" if pd.notna(x) else "N/A")
+    formatted.columns = [str(c).split(' ')[0] for c in formatted.columns]
+    return formatted
+
+# --- 2. LEAD GENERATION ---
 @st.dialog("👑 Unlock Premium Access")
 def premium_signup():
-    st.markdown("Join **Dixit Capital Premium** for algorithmic access & fundamental models.")
+    st.markdown("Join **Dixit Investment Group** for algorithmic access & fundamental models.")
     YOUR_WHATSAPP_NUMBER = "917052360459" 
     name = st.text_input("Full Name")
     city = st.text_input("City")
     if name and city:
-        raw_message = f"Hello Dixit Capital! 📈\n\nI want to purchase the Premium Access Code.\nName: {name}\nCity: {city}"
+        raw_message = f"Hello Dixit Investment Group! 📈\n\nI want to purchase the Premium Access Code.\nName: {name}\nCity: {city}"
         whatsapp_url = f"https://wa.me/{YOUR_WHATSAPP_NUMBER}?text={urllib.parse.quote(raw_message)}"
         st.link_button("📲 Chat to get Code", whatsapp_url, type="primary", use_container_width=True)
     else:
         st.button("📲 Chat to get Code", type="primary", disabled=True, use_container_width=True)
 
-# --- 3. TOP MARKET BAR (LIVE INDEX) ---
+# --- 3. TOP MARKET BAR ---
 @st.cache_data(ttl=300)
 def get_index_data(ticker):
     try: return yf.Ticker(ticker).history(period="2d")
@@ -81,7 +95,7 @@ def get_live_news(company_name):
 
 # --- 5. PEER COMPARISON VIEW ---
 if st.session_state.current_view == "COMPARE":
-    st.markdown("<h3 style='color:#1E88E5; margin-top:-20px;'>🏢 Dixit Capital</h3>", unsafe_allow_html=True)
+    st.markdown("<h3 style='color:#1E88E5; margin-top:-20px;'>🏢 Dixit Investment Group</h3>", unsafe_allow_html=True)
     st.markdown("### ⚖️ Peer-to-Peer Asset Comparison")
     if st.button("⬅️ Back to Home Engine"): st.session_state.current_view = "HOME"; st.rerun()
     st.write("---")
@@ -99,13 +113,11 @@ if st.session_state.current_view == "COMPARE":
         }
         st.table(pd.DataFrame(comp_data).set_index("Metric"))
 
-# --- 6. HOME PAGE (Search, Trending, Calc, Portfolio) ---
+# --- 6. HOME PAGE ---
 elif st.session_state.current_view == "HOME":
-    
-    # CLEAN HOME BRANDING
     st.markdown("""
         <div style='text-align: center; padding: 20px;'>
-            <h1 style='color: #1E88E5; font-size: 3.5rem; margin-bottom: 0px;'>🏢 Dixit Capital</h1>
+            <h1 style='color: #1E88E5; font-size: 3.5rem; margin-bottom: 0px;'>🏢 Dixit Investment Group</h1>
             <p style='color: #555; font-size: 1.2rem; font-weight: bold;'>A Premium Wealth and Portfolio Management Company</p>
         </div>
     """, unsafe_allow_html=True)
@@ -164,11 +176,11 @@ elif st.session_state.current_view == "HOME":
             df_port["P&L (₹)"] = df_port["Current Value"] - df_port["Total Invested"]
             st.dataframe(df_port, use_container_width=True)
 
-# --- 7. STOCK ANALYSIS ENGINE (Extended Ratios) ---
+# --- 7. STOCK ANALYSIS ENGINE (Extended Ratios & Crores) ---
 else:
     user_ticker = st.session_state.current_view
     
-    st.markdown("<h3 style='color:#1E88E5; margin-top:-20px;'>🏢 Dixit Capital</h3>", unsafe_allow_html=True)
+    st.markdown("<h3 style='color:#1E88E5; margin-top:-20px;'>🏢 Dixit Investment Group</h3>", unsafe_allow_html=True)
     if st.button("⬅️ Back to Home Search"): st.session_state.current_view = "HOME"; st.rerun()
     st.write("---")
     
@@ -186,8 +198,7 @@ else:
 
         data['SMA50'] = data['Close'].rolling(50).mean()
         
-        # 7 TABS
-        tab1, tab2, tab3, tab4, tab5, tab6, tab7 = st.tabs(["📊 Price Chart", "📋 Advanced Ratios & Whales", "📑 Financials", "🏢 Corp Actions", "📰 Live News", "💎 AI Quant", "📥 Export"])
+        tab1, tab2, tab3, tab4, tab5, tab6, tab7 = st.tabs(["📊 Price Chart", "📋 Pro Ratios & Whales", "📑 Financials (In Cr)", "🏢 Corp Actions", "📰 Live News", "💎 AI Quant", "📥 Export"])
 
         with tab1:
             fig = go.Figure(data=[go.Candlestick(x=data.index, open=data['Open'], high=data['High'], low=data['Low'], close=data['Close'])])
@@ -196,31 +207,33 @@ else:
             st.plotly_chart(fig, use_container_width=True)
 
         with tab2:
-            st.markdown("### 📈 Core Financial Metrics")
+            st.markdown("### 📈 Comprehensive Financial Metrics")
             
-            # ROW 1
+            # ROW 1: Core & Value
             f1, f2, f3, f4 = st.columns(4)
             mc = info.get('marketCap', 0)
             f1.metric("Market Cap (Cr)", f"₹{format_inr(round(mc/10000000, 2))}" if mc else "N/A")
             f2.metric("P/E Ratio", round(info.get('trailingPE', 0), 2) if info.get('trailingPE') else "N/A")
-            f3.metric("EPS (TTM)", f"₹{round(info.get('trailingEps', 0), 2)}" if info.get('trailingEps') else "N/A")
+            f3.metric("PEG Ratio", round(info.get('pegRatio', 0), 2) if info.get('pegRatio') else "N/A")
             f4.metric("Dividend Yield", f"{round(info.get('dividendYield', 0)*100, 2)}%" if info.get('dividendYield') else "0.00%")
             
-            st.write("") # Spacing
+            st.write("") 
             
-            # ROW 2 (The New Ratios)
+            # ROW 2: Returns & Book
             r1, r2, r3, r4 = st.columns(4)
             r1.metric("ROE", f"{round(info.get('returnOnEquity', 0)*100, 2)}%" if info.get('returnOnEquity') else "N/A")
-            r2.metric("P/B Ratio", round(info.get('priceToBook', 0), 2) if info.get('priceToBook') else "N/A")
-            r3.metric("Book Value", f"₹{round(info.get('bookValue', 0), 2)}" if info.get('bookValue') else "N/A")
-            r4.metric("Debt/Equity", round(info.get('debtToEquity', 0), 2) if info.get('debtToEquity') else "N/A")
+            r2.metric("ROA", f"{round(info.get('returnOnAssets', 0)*100, 2)}%" if info.get('returnOnAssets') else "N/A")
+            r3.metric("P/B Ratio", round(info.get('priceToBook', 0), 2) if info.get('priceToBook') else "N/A")
+            r4.metric("Book Value", f"₹{round(info.get('bookValue', 0), 2)}" if info.get('bookValue') else "N/A")
             
-            st.write("") # Spacing
+            st.write("") 
             
-            # ROW 3 (Highs & Lows)
-            h1, h2, h3 = st.columns(3)
-            h1.metric("52-Week High", f"₹{format_inr(round(info.get('fiftyTwoWeekHigh', 0), 2))}")
-            h2.metric("52-Week Low", f"₹{format_inr(round(info.get('fiftyTwoWeekLow', 0), 2))}")
+            # ROW 3: Margins & Liquidity
+            m_col1, m_col2, m_col3, m_col4 = st.columns(4)
+            m_col1.metric("Profit Margin", f"{round(info.get('profitMargins', 0)*100, 2)}%" if info.get('profitMargins') else "N/A")
+            m_col2.metric("Operating Margin", f"{round(info.get('operatingMargins', 0)*100, 2)}%" if info.get('operatingMargins') else "N/A")
+            m_col3.metric("Current Ratio", round(info.get('currentRatio', 0), 2) if info.get('currentRatio') else "N/A")
+            m_col4.metric("Debt/Equity", round(info.get('debtToEquity', 0), 2) if info.get('debtToEquity') else "N/A")
             
             st.write("---")
             st.markdown("### 🐋 Shareholding Pattern")
@@ -229,18 +242,21 @@ else:
             st.write(f"**Promoters:** {insider}% | **Institutions (FII/DII):** {inst}% | **Public:** {round(100 - insider - inst, 2)}%")
 
         with tab3:
-            st.markdown("### 📑 Annual Financial Statements")
+            st.markdown("### 📑 Annual Financial Statements (In Crores)")
+            st.caption("Figures are represented in ₹ Crores (Cr) for easier institutional reading.")
             stmt1, stmt2 = st.tabs(["Income Statement", "Balance Sheet"])
             with stmt1:
                 try:
                     fin_df = t_obj.financials
-                    if not fin_df.empty: st.dataframe(fin_df.dropna(how='all'), use_container_width=True)
+                    if not fin_df.empty: 
+                        st.dataframe(format_df_to_crores(fin_df.dropna(how='all')), use_container_width=True)
                     else: st.warning("Income Statement data not available.")
                 except: st.warning("Error fetching Income Statement.")
             with stmt2:
                 try:
                     bs_df = t_obj.balance_sheet
-                    if not bs_df.empty: st.dataframe(bs_df.dropna(how='all'), use_container_width=True)
+                    if not bs_df.empty: 
+                        st.dataframe(format_df_to_crores(bs_df.dropna(how='all')), use_container_width=True)
                     else: st.warning("Balance Sheet data not available.")
                 except: st.warning("Error fetching Balance Sheet.")
 
