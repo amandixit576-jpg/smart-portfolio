@@ -6,6 +6,7 @@ import urllib.parse
 import urllib.request
 import xml.etree.ElementTree as ET
 import pandas as pd
+import requests # Nayi library for bypassing Yahoo blocks
 
 # --- 1. PAGE SETUP & MEMORY ---
 st.set_page_config(page_title="Dixit Investment Group | Screener", layout="wide", initial_sidebar_state="collapsed")
@@ -31,7 +32,16 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# --- HELPER FUNCTIONS ---
+# --- HELPER FUNCTIONS & YAHOO BYPASS ---
+@st.cache_resource
+def get_yf_session():
+    # Yeh Yahoo ko trick karega ki hum Chrome browser use kar rahe hain
+    session = requests.Session()
+    session.headers.update({
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36"
+    })
+    return session
+
 def format_inr(number):
     if pd.isna(number) or number is None: return "N/A"
     try:
@@ -61,18 +71,20 @@ def format_df_to_crores(df):
     formatted.columns = [str(c).split(' ')[0] for c in formatted.columns]
     return formatted
 
-# --- YAHOO FINANCE ANTI-CRASH CACHE ---
 @st.cache_data(ttl=3600)
 def fetch_safe_info(ticker_symbol):
     try:
-        return yf.Ticker(ticker_symbol).info
+        session = get_yf_session()
+        return yf.Ticker(ticker_symbol, session=session).info
     except Exception:
-        return {} # Returns empty dict if Yahoo blocks the request
+        return {} 
 
 # --- 2. TOP MARKET BAR ---
 @st.cache_data(ttl=300)
 def get_index_data(ticker):
-    try: return yf.Ticker(ticker).history(period="2d")
+    try: 
+        session = get_yf_session()
+        return yf.Ticker(ticker, session=session).history(period="2d")
     except: return None
 
 nifty, sensex, banknifty = get_index_data("^NSEI"), get_index_data("^BSESN"), get_index_data("^NSEBANK")
@@ -172,7 +184,8 @@ elif st.session_state.current_view == "MUTUAL_FUNDS":
 
     if st.button("Fetch NAV & Chart 🚀", type="primary"):
         with st.spinner("Fetching latest NAV..."):
-            mf_data = yf.Ticker(mf_ticker)
+            session = get_yf_session()
+            mf_data = yf.Ticker(mf_ticker, session=session)
             try:
                 hist = mf_data.history(period="1y")
             except:
@@ -250,7 +263,8 @@ elif st.session_state.current_view == "HOME":
                 st.success("Trade Added!")
         if not st.session_state.portfolio.empty:
             df_port = st.session_state.portfolio.copy()
-            df_port["Live Price"] = [yf.Ticker(t).history(period="1d")['Close'].iloc[-1] if not yf.Ticker(t).history(period="1d").empty else 0 for t in df_port["Ticker"]]
+            session = get_yf_session()
+            df_port["Live Price"] = [yf.Ticker(t, session=session).history(period="1d")['Close'].iloc[-1] if not yf.Ticker(t, session=session).history(period="1d").empty else 0 for t in df_port["Ticker"]]
             df_port["Total Invested"] = df_port["Buy Price"] * df_port["Quantity"]
             df_port["Current Value"] = df_port["Live Price"] * df_port["Quantity"]
             df_port["P&L (₹)"] = df_port["Current Value"] - df_port["Total Invested"]
@@ -268,7 +282,8 @@ else:
     if st.button("⬅️ Back to Home Search"): st.session_state.current_view = "HOME"; st.rerun()
     st.write("---")
     
-    t_obj = yf.Ticker(user_ticker)
+    session = get_yf_session()
+    t_obj = yf.Ticker(user_ticker, session=session)
     
     try:
         data = t_obj.history(period="1y")
@@ -427,7 +442,8 @@ else:
                         
                         for sym in SCAN_LIST:
                             try:
-                                scan_data = yf.Ticker(sym).history(period="3mo")
+                                session = get_yf_session()
+                                scan_data = yf.Ticker(sym, session=session).history(period="3mo")
                                 if len(scan_data) > 50:
                                     close_price = scan_data['Close'].iloc[-1]
                                     sma50 = scan_data['Close'].rolling(50).mean().iloc[-1]
