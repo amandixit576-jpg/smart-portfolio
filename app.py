@@ -16,7 +16,7 @@ if 'portfolio' not in st.session_state: st.session_state.portfolio = pd.DataFram
 st.markdown("""
     <style>
     /* Center aligning main content */
-    .block-container { padding-top: 1rem; padding-bottom: 2rem; max-width: 1200px; }
+    .block-container { padding-top: 0rem; padding-bottom: 2rem; max-width: 1200px; }
     
     /* FIX: Prevent Button Text Wrapping (Stops RELIANC E) */
     div[data-testid="stButton"] button {
@@ -38,21 +38,43 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# --- HELPER FUNCTIONS ---
+# --- HELPER FUNCTIONS FOR INDIAN FORMATTING ---
 def format_inr(number):
-    if pd.isna(number) or number is None: return "N/A"
+    """Formats a number using the Indian numbering system (e.g., 1,00,000.00)"""
+    if pd.isna(number) or number is None: 
+        return "N/A"
     try:
+        is_negative = number < 0
+        number = abs(number)
         s, *d = str(round(float(number), 2)).partition(".")
         r = ",".join([s[x-2:x] for x in range(-3, -len(s), -2)][::-1] + [s[-3:]])
-        return "".join([r] + d) if r else s
-    except: return str(number)
+        formatted_num = "".join([r] + d) if r else s
+        return f"-{formatted_num}" if is_negative else formatted_num
+    except: 
+        return str(number)
+
+def format_large_number(number):
+    """Smartly formats large numbers to Hundreds, Thousands, or Crores."""
+    if pd.isna(number) or number is None:
+        return "N/A"
+    try:
+        num = float(number)
+        if num >= 10000000:  # Crores
+            return f"{format_inr(round(num / 10000000, 2))} Cr"
+        elif num >= 100000:  # Lakhs
+            return f"{format_inr(round(num / 100000, 2))} L"
+        else:
+            return format_inr(num)
+    except:
+        return str(number)
 
 def format_df_to_crores(df):
+    """Converts dataframe values to Crores for statements."""
     if df is None or df.empty: return df
     formatted = df.copy()
     for col in formatted.columns:
         formatted[col] = pd.to_numeric(formatted[col], errors='coerce')
-        formatted[col] = formatted[col].apply(lambda x: f"{format_inr(x / 10000000)}" if pd.notna(x) else "N/A")
+        formatted[col] = formatted[col].apply(lambda x: f"{format_inr(round(x / 10000000, 2))}" if pd.notna(x) else "N/A")
     formatted.columns = [str(c).split(' ')[0] for c in formatted.columns]
     return formatted
 
@@ -70,10 +92,9 @@ def display_index(col, name, data):
         chg, pct = curr - prev, ((curr - prev)/prev)*100
         color = "#16A34A" if chg >= 0 else "#DC2626"
         sign = "+" if chg >= 0 else ""
-        # Using Streamlit's native markdown for 100% stability across Light/Dark modes
         col.markdown(f"**{name}**: ₹{format_inr(round(curr, 2))} <span style='color:{color}; font-weight:bold;'>({sign}{pct:.2f}%)</span>", unsafe_allow_html=True)
 
-# Using native columns so it NEVER disappears
+st.markdown("<br>", unsafe_allow_html=True) # Little breathing room
 top1, top2, top3, top4 = st.columns([1, 2, 2, 2])
 display_index(top2, "SENSEX", sensex)
 display_index(top3, "NIFTY 50", nifty)
@@ -119,9 +140,23 @@ if st.session_state.current_view == "COMPARE":
     if st.button("Run Comparison 🚀", type="primary"):
         i1, i2 = yf.Ticker(t1).info, yf.Ticker(t2).info
         comp_data = {
-            "Metric": ["Price", "P/E Ratio", "ROE (%)", "Debt to Equity", "Market Cap (Cr)"],
-            TOP_STOCKS[t1]: [f"₹{i1.get('currentPrice', 'N/A')}", i1.get('trailingPE', 'N/A'), round(i1.get('returnOnEquity', 0)*100, 2) if i1.get('returnOnEquity') else 'N/A', i1.get('debtToEquity', 'N/A'), f"₹{format_inr(round(i1.get('marketCap', 0)/10000000, 2))}" if i1.get('marketCap') else 'N/A'],
-            TOP_STOCKS[t2]: [f"₹{i2.get('currentPrice', 'N/A')}", i2.get('trailingPE', 'N/A'), round(i2.get('returnOnEquity', 0)*100, 2) if i2.get('returnOnEquity') else 'N/A', i2.get('debtToEquity', 'N/A'), f"₹{format_inr(round(i2.get('marketCap', 0)/10000000, 2))}" if i2.get('marketCap') else 'N/A']
+            "Metric": ["Price (₹)", "P/E Ratio", "P/B Ratio", "ROE (%)", "Debt to Equity", "Market Cap"],
+            TOP_STOCKS[t1]: [
+                format_inr(i1.get('currentPrice')), 
+                round(i1.get('trailingPE', 0), 2) if i1.get('trailingPE') else 'N/A', 
+                round(i1.get('priceToBook', 0), 2) if i1.get('priceToBook') else 'N/A',
+                round(i1.get('returnOnEquity', 0)*100, 2) if i1.get('returnOnEquity') else 'N/A', 
+                round(i1.get('debtToEquity', 0), 2) if i1.get('debtToEquity') else 'N/A', 
+                f"₹{format_large_number(i1.get('marketCap'))}"
+            ],
+            TOP_STOCKS[t2]: [
+                format_inr(i2.get('currentPrice')), 
+                round(i2.get('trailingPE', 0), 2) if i2.get('trailingPE') else 'N/A', 
+                round(i2.get('priceToBook', 0), 2) if i2.get('priceToBook') else 'N/A',
+                round(i2.get('returnOnEquity', 0)*100, 2) if i2.get('returnOnEquity') else 'N/A', 
+                round(i2.get('debtToEquity', 0), 2) if i2.get('debtToEquity') else 'N/A', 
+                f"₹{format_large_number(i2.get('marketCap'))}"
+            ]
         }
         st.table(pd.DataFrame(comp_data).set_index("Metric"))
 
@@ -140,17 +175,15 @@ elif st.session_state.current_view == "HOME":
                 st.rerun()
         
         st.markdown("<br>", unsafe_allow_html=True)
-        # Trending Section
         col_t1, col_t2 = st.columns([1, 4])
         col_t1.markdown("**What's Trending:**")
         with col_t2:
             t1, t2, t3, t4, t5 = st.columns(5)
-            # The CSS above will prevent these texts from wrapping
-            if t1.button("RELIANCE", use_container_width=True): st.session_state.current_view = "RELIANCE.NS"; st.rerun()
-            if t2.button("HDFCBANK", use_container_width=True): st.session_state.current_view = "HDFCBANK.NS"; st.rerun()
-            if t3.button("ZOMATO", use_container_width=True): st.session_state.current_view = "ZOMATO.NS"; st.rerun()
-            if t4.button("TCS", use_container_width=True): st.session_state.current_view = "TCS.NS"; st.rerun()
-            if t5.button("ITC", use_container_width=True): st.session_state.current_view = "ITC.NS"; st.rerun()
+            if t1.button("RELIANCE"): st.session_state.current_view = "RELIANCE.NS"; st.rerun()
+            if t2.button("HDFCBANK"): st.session_state.current_view = "HDFCBANK.NS"; st.rerun()
+            if t3.button("ZOMATO"): st.session_state.current_view = "ZOMATO.NS"; st.rerun()
+            if t4.button("TCS"): st.session_state.current_view = "TCS.NS"; st.rerun()
+            if t5.button("ITC"): st.session_state.current_view = "ITC.NS"; st.rerun()
 
     st.write("---")
     
@@ -187,9 +220,15 @@ elif st.session_state.current_view == "HOME":
             df_port["Total Invested"] = df_port["Buy Price"] * df_port["Quantity"]
             df_port["Current Value"] = df_port["Live Price"] * df_port["Quantity"]
             df_port["P&L (₹)"] = df_port["Current Value"] - df_port["Total Invested"]
-            st.dataframe(df_port, use_container_width=True)
+            
+            # Format Portfolio DF
+            display_df = df_port.copy()
+            for col in ["Buy Price", "Live Price", "Total Invested", "Current Value", "P&L (₹)"]:
+                display_df[col] = display_df[col].apply(lambda x: format_inr(round(x, 2)))
+                
+            st.dataframe(display_df, use_container_width=True)
 
-# --- 6. STOCK ANALYSIS ENGINE (Extended Ratios & Crores) ---
+# --- 6. STOCK ANALYSIS ENGINE (Expanded Ratios) ---
 else:
     user_ticker = st.session_state.current_view
     
@@ -205,7 +244,7 @@ else:
         curr_price, prev_price = data['Close'].iloc[-1], data['Close'].iloc[-2]
         
         c1, c2 = st.columns([3, 1])
-        c1.markdown(f"<h1 style='color: #1E88E5; margin-bottom: 0px;'>{display_name}</h1>", unsafe_allow_html=True)
+        c1.markdown(f"<h1 style='color: #1E293B;'>{display_name}</h1>", unsafe_allow_html=True)
         c2.metric("Current Price", f"₹{format_inr(round(curr_price, 2))}", f"{(curr_price - prev_price):.2f} ({((curr_price - prev_price)/prev_price)*100:.2f}%)")
 
         data['SMA50'] = data['Close'].rolling(50).mean()
@@ -215,33 +254,33 @@ else:
         with tab1:
             fig = go.Figure(data=[go.Candlestick(x=data.index, open=data['Open'], high=data['High'], low=data['Low'], close=data['Close'])])
             fig.add_trace(go.Scatter(x=data.index, y=data['SMA50'], line=dict(color='orange'), name='50 SMA'))
-            
-            # This makes the chart adapt to Light/Dark mode automatically!
-            fig.update_layout(margin=dict(t=10, b=10, l=10, r=10), height=500, xaxis_rangeslider_visible=False)
+            fig.update_layout(template="plotly_white", margin=dict(t=10, b=10, l=10, r=10), height=500, xaxis_rangeslider_visible=False)
             st.plotly_chart(fig, use_container_width=True)
 
         with tab2:
             st.markdown("### 📈 Comprehensive Financial Metrics")
-            f1, f2, f3, f4 = st.columns(4)
-            mc = info.get('marketCap', 0)
-            f1.metric("Market Cap (Cr)", f"₹{format_inr(round(mc/10000000, 2))}" if mc else "N/A")
-            f2.metric("P/E Ratio", round(info.get('trailingPE', 0), 2) if info.get('trailingPE') else "N/A")
-            f3.metric("PEG Ratio", round(info.get('pegRatio', 0), 2) if info.get('pegRatio') else "N/A")
-            f4.metric("Dividend Yield", f"{round(info.get('dividendYield', 0)*100, 2)}%" if info.get('dividendYield') else "0.00%")
             
-            st.write("") 
+            # Expanded Ratios
             r1, r2, r3, r4 = st.columns(4)
-            r1.metric("ROE", f"{round(info.get('returnOnEquity', 0)*100, 2)}%" if info.get('returnOnEquity') else "N/A")
-            r2.metric("ROA", f"{round(info.get('returnOnAssets', 0)*100, 2)}%" if info.get('returnOnAssets') else "N/A")
-            r3.metric("P/B Ratio", round(info.get('priceToBook', 0), 2) if info.get('priceToBook') else "N/A")
-            r4.metric("Book Value", f"₹{round(info.get('bookValue', 0), 2)}" if info.get('bookValue') else "N/A")
+            r1.metric("Market Cap", f"₹{format_large_number(info.get('marketCap'))}")
+            r2.metric("Current Price", f"₹{format_inr(info.get('currentPrice', 0))}")
+            r3.metric("52 Week High", f"₹{format_inr(info.get('fiftyTwoWeekHigh', 0))}")
+            r4.metric("52 Week Low", f"₹{format_inr(info.get('fiftyTwoWeekLow', 0))}")
             
-            st.write("") 
-            m_col1, m_col2, m_col3, m_col4 = st.columns(4)
-            m_col1.metric("Profit Margin", f"{round(info.get('profitMargins', 0)*100, 2)}%" if info.get('profitMargins') else "N/A")
-            m_col2.metric("Operating Margin", f"{round(info.get('operatingMargins', 0)*100, 2)}%" if info.get('operatingMargins') else "N/A")
-            m_col3.metric("Current Ratio", round(info.get('currentRatio', 0), 2) if info.get('currentRatio') else "N/A")
-            m_col4.metric("Debt/Equity", round(info.get('debtToEquity', 0), 2) if info.get('debtToEquity') else "N/A")
+            st.write("")
+            r5, r6, r7, r8 = st.columns(4)
+            r5.metric("Stock P/E", round(info.get('trailingPE', 0), 2) if info.get('trailingPE') else "N/A")
+            r6.metric("Book Value", f"₹{format_inr(round(info.get('bookValue', 0), 2))}" if info.get('bookValue') else "N/A")
+            r7.metric("Dividend Yield", f"{round(info.get('dividendYield', 0)*100, 2)}%" if info.get('dividendYield') else "0.00%")
+            r8.metric("ROCE", f"{round(info.get('returnOnCapitalEmployed', 0)*100, 2)}%" if info.get('returnOnCapitalEmployed') else "N/A") # Added ROCE if available
+            
+            st.write("")
+            r9, r10, r11, r12 = st.columns(4)
+            r9.metric("ROE", f"{round(info.get('returnOnEquity', 0)*100, 2)}%" if info.get('returnOnEquity') else "N/A")
+            r10.metric("Face Value", f"₹{info.get('regularMarketPrice', 'N/A')}") # Approximation
+            r11.metric("Debt to Equity", round(info.get('debtToEquity', 0), 2) if info.get('debtToEquity') else "N/A")
+            r12.metric("Price to Book", round(info.get('priceToBook', 0), 2) if info.get('priceToBook') else "N/A")
+
             
             st.write("---")
             st.markdown("### 🐋 Shareholding Pattern")
@@ -251,7 +290,7 @@ else:
 
         with tab3:
             st.markdown("### 📑 Annual Financial Statements (In Crores)")
-            st.caption("Figures are represented in ₹ Crores (Cr) for easier institutional reading.")
+            st.caption("Figures are represented in ₹ Crores (Cr).")
             stmt1, stmt2 = st.tabs(["Income Statement", "Balance Sheet"])
             with stmt1:
                 try:
