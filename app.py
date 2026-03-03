@@ -275,7 +275,6 @@ def fetch_safe_info(ticker_symbol):
         return yf.Ticker(ticker_symbol).info
     except Exception as e:
         return {} # Agar Yahoo block kare toh khali dict bhej de, app crash na ho
-
 else:
     user_ticker = st.session_state.current_view
     
@@ -490,4 +489,5 @@ else:
             st.download_button(label="Download CSV", data=report_df.to_csv(index=False).encode('utf-8'), file_name=f"{user_ticker}_Report.csv", mime="text/csv", type="primary")
 
     else: st.error("⚠️ Invalid Asset Symbol. Try searching something like 'TCS'.")
+
 
