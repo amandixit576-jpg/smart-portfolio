@@ -552,113 +552,152 @@ Want to see the deep-dive audit? Hit the link in my bio to use my custom screene
             else: st.write("Data not available.")
 
     else: st.error("⚠️ Invalid Asset Symbol. Try searching something like 'TCS'.")
-# --- MEGA FOOTER (FIXED ALIGNMENT & LINKS) ---
+# --- MEGA FOOTER (DETAILED ABOUT & SOCIAL ICONS) ---
 mega_footer = """
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
 <style>
 .premium-footer {
-background-color: #11141A;
-padding: 50px 20px 30px 20px;
-color: #A0AEC0;
-font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-border-top: 1px solid #2D3748;
-margin-top: 60px;
+    background-color: #11141A;
+    padding: 50px 20px 30px 20px;
+    color: #A0AEC0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    border-top: 1px solid #2D3748;
+    margin-top: 60px;
 }
 .footer-grid {
-display: flex;
-flex-wrap: wrap;
-justify-content: space-between;
-margin-bottom: 40px;
-max-width: 1200px;
-margin-left: auto;
-margin-right: auto;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    margin-bottom: 40px;
+    max-width: 1200px;
+    margin-left: auto;
+    margin-right: auto;
 }
 .footer-col {
-flex: 1;
-min-width: 200px;
-margin-bottom: 20px;
+    flex: 1;
+    min-width: 200px;
+    margin-bottom: 20px;
 }
 .footer-brand {
-flex: 1.5; 
-padding-right: 30px;
+    flex: 1.6; /* About section ko thodi zyada jagah dene ke liye */
+    padding-right: 40px;
 }
 .footer-col h4 {
-color: #E2E8F0;
-font-size: 16px;
-margin-bottom: 18px;
-font-weight: 600;
-letter-spacing: 0.5px;
+    color: #E2E8F0;
+    font-size: 16px;
+    margin-bottom: 18px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
 }
 .footer-col a {
-display: block;
-color: #A0AEC0;
-text-decoration: none;
-font-size: 14px;
-margin-bottom: 12px;
-transition: 0.3s;
+    display: block;
+    color: #A0AEC0;
+    text-decoration: none;
+    font-size: 14px;
+    margin-bottom: 12px;
+    transition: 0.3s;
 }
 .footer-col a:hover {
-color: #D4AF37;
-padding-left: 5px;
+    color: #D4AF37;
+    padding-left: 5px;
 }
+
+/* Social Media Icons Styling */
+.social-icons {
+    display: flex;
+    gap: 15px;
+    margin-top: 20px;
+}
+.social-icons a {
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    background-color: #2D3748;
+    border-radius: 50%;
+    color: #E2E8F0 !important;
+    font-size: 16px;
+    transition: 0.3s;
+    padding: 0 !important;
+}
+.social-icons a:hover {
+    background-color: #D4AF37; /* Golden hover */
+    color: #11141A !important;
+    transform: translateY(-3px); /* Halka sa upar uthne ka effect */
+}
+
 .footer-bottom {
-max-width: 1200px;
-margin: 0 auto;
-border-top: 1px solid #2D3748;
-padding-top: 25px;
-font-size: 11px;
-line-height: 1.6;
-color: #718096;
+    max-width: 1200px;
+    margin: 0 auto;
+    border-top: 1px solid #2D3748;
+    padding-top: 25px;
+    font-size: 11px;
+    line-height: 1.6;
+    color: #718096;
 }
 .footer-bottom p {
-margin: 6px 0;
+    margin: 6px 0;
 }
 .brand-title {
-color: #D4AF37;
-font-size: 22px;
-font-weight: bold;
-margin-bottom: 15px;
-letter-spacing: 1px;
+    color: #D4AF37;
+    font-size: 22px;
+    font-weight: bold;
+    margin-bottom: 15px;
+    letter-spacing: 1px;
 }
 .block-container {
-padding-bottom: 0rem !important;
+    padding-bottom: 0rem !important;
 }
 </style>
 
 <div class="premium-footer">
-<div class="footer-grid">
-<div class="footer-col footer-brand">
-<div class="brand-title">⚜️ DIXIT INVESTMENT GROUP</div>
-<p style="font-size: 13px; line-height: 1.6;">The most advanced stock screening, equity research, and portfolio management terminal built for the modern investor. Intelligent wealth building starts here.</p>
-</div>
-<div class="footer-col">
-<h4>Company</h4>
-<a href="https://www.linkedin.com/in/amandixit29" target="_blank">About Us</a>
-<a href="#">Our Vision</a>
-<a href="#">Leadership</a>
-<a href="#">Careers</a>
-</div>
-<div class="footer-col">
-<h4>Terminal Tools</h4>
-<a href="#">Market Dashboard</a>
-<a href="#">Stock Screener</a>
-<a href="#">SIP Goal Planner</a>
-<a href="#">Tax Audit & Portfolio</a>
-</div>
-<div class="footer-col">
-<h4>Legal & Support</h4>
-<a href="#">Help Center</a>
-<a href="#">Privacy Policy</a>
-<a href="#">Terms of Use</a>
-<a href="#">Regulatory Disclaimer</a>
-</div>
-</div>
-<div class="footer-bottom">
-<p><strong>SEBI Registration:</strong> INA000000000 (Dummy - For Educational Purposes Only) | <strong>Headquarters:</strong> Lucknow, Uttar Pradesh</p>
-<p>Copyright © 2026 Dixit Investment Group. All Rights Reserved. | Data Feed provided by Third-Party APIs | Prices may be delayed by 15 minutes.</p>
-<p><strong>Important Disclaimer:</strong> Though Dixit Investment Group is a highly advanced tool for financial analysis, it in no way recommends the fair value of any companies (since that is always subjective). Informed decision making and taking calculated risk is recommended for you to make the most out of equity investing. Therefore, the investors are hereby advised to use this terminal purely as an analytical research tool and apply their discretion while investing.</p>
-</div>
+    <div class="footer-grid">
+        <div class="footer-col footer-brand">
+            <div class="brand-title">⚜️ DIXIT INVESTMENT GROUP</div>
+            <p style="font-size: 13px; line-height: 1.7; text-align: justify;">
+                Dixit Investment Group (DIG) is a premier quantitative research and portfolio management terminal designed for modern value investors and financial professionals. Built on the principles of deep fundamental analysis and data-driven investing, DIG provides institutional-grade market screeners, real-time SIP planning, and comprehensive tax audit tools. Our mission is to democratize elite financial analytics, empowering retail investors to make calculated, risk-adjusted decisions in the Indian equity markets.
+            </p>
+            
+            <div class="social-icons">
+                <a href="https://instagram.com/aman_creats" target="_blank" title="Instagram"><i class="fab fa-instagram"></i></a>
+                <a href="https://www.linkedin.com/in/amandixit29" target="_blank" title="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+                <a href="#" target="_blank" title="Twitter/X"><i class="fab fa-x-twitter"></i></a>
+                <a href="#" target="_blank" title="YouTube"><i class="fab fa-youtube"></i></a>
+            </div>
+
+        </div>
+        <div class="footer-col">
+            <h4>Company</h4>
+            <a href="https://www.linkedin.com/in/amandixit29" target="_blank">About Us</a>
+            <a href="#">Our Vision</a>
+            <a href="#">Leadership</a>
+            <a href="#">Careers</a>
+        </div>
+        <div class="footer-col">
+            <h4>Terminal Tools</h4>
+            <a href="#">Market Dashboard</a>
+            <a href="#">Stock Screener</a>
+            <a href="#">SIP Goal Planner</a>
+            <a href="#">Tax Audit & Portfolio</a>
+        </div>
+        <div class="footer-col">
+            <h4>Legal & Support</h4>
+            <a href="#">Help Center</a>
+            <a href="#">Privacy Policy</a>
+            <a href="#">Terms of Use</a>
+            <a href="#">Regulatory Disclaimer</a>
+        </div>
+    </div>
+    <div class="footer-bottom">
+        <p><strong>SEBI Registration:</strong> INA000000000 (Dummy - For Educational Purposes Only) | <strong>Headquarters:</strong> Lucknow, Uttar Pradesh</p>
+        <p>Copyright © 2026 Dixit Investment Group. All Rights Reserved. | Data Feed provided by Third-Party APIs | Prices may be delayed by 15 minutes.</p>
+        <p><strong>Important Disclaimer:</strong> Though Dixit Investment Group is a highly advanced tool for financial analysis, it in no way recommends the fair value of any companies (since that is always subjective). Informed decision making and taking calculated risk is recommended for you to make the most out of equity investing. Therefore, the investors are hereby advised to use this terminal purely as an analytical research tool and apply their discretion while investing.</p>
+    </div>
 </div>
 """
 st.markdown(mega_footer, unsafe_allow_html=True)
+
 
 
