@@ -1,4 +1,30 @@
 import streamlit as st
+from streamlit_supabase_auth import login_form
+import os
+
+# Page Config
+st.set_page_config(page_title="DIG Terminal", page_icon="📈", layout="wide")
+
+# Render ke secure locker se chabiyan nikaalna
+SUPABASE_URL = os.environ.get("SUPABASE_URL")
+SUPABASE_KEY = os.environ.get("SUPABASE_KEY")
+
+# --- AUTHENTICATION GATE ---
+session = login_form(
+    url=SUPABASE_URL,
+    apiKey=SUPABASE_KEY,
+    providers=["google"],
+)
+
+if not session:
+    st.markdown("<h2 style='text-align: center;'>Welcome to Dixit Investment Group</h2>", unsafe_allow_html=True)
+    st.warning("🔒 Please sign in to access the Premium Financial Terminal.")
+    st.stop() # Login ke bina niche ka code nahi chalega
+
+# --- TERMINAL CONTENT ---
+st.success(f"Welcome to the Terminal, {session['user']['email']}!")
+st.title("📈 Institutional Market Dashboard")
+# (Aapka baaki ka stock analysis wala code iske niche aayega)
 # --- PRECISION CSS: HIDE ONLY RIGHT-SIDE BUTTONS & LOGOS ---
 hide_st_style = """
             <style>
@@ -613,6 +639,7 @@ mega_footer = """
 </div>
 """
 st.markdown(mega_footer, unsafe_allow_html=True)
+
 
 
 
