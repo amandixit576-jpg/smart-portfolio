@@ -1,16 +1,23 @@
 import streamlit as st
-# --- THE WILDCARD CSS FIX ---
+# --- PRECISION CSS: HIDE ONLY RIGHT-SIDE BUTTONS & LOGOS ---
 hide_st_style = """
             <style>
-            /* 1. Upar Right (Fork/GitHub/3-dots) ko gayab karega */
-            [data-testid="stToolbar"] {display: none !important;}
-            
-            /* 2. Neeche Right (Red/Green logo) ko udane ka Wildcard */
-            div[class^="viewerBadge"] {display: none !important;}
-            [data-testid="stStatusWidget"] {display: none !important;}
-            
-            /* 3. Footer ('Made with Streamlit') ko gayab karega */
-            footer {display: none !important;}
+            /* 1. RIGHT side ke buttons (Fork, GitHub, 3-dots) ko gayab karega */
+            [data-testid="stToolbarActions"] {display: none !important;}
+
+            /* 2. LEFT side ka sidebar button (>>) hamesha ZINDA rakhega */
+            [data-testid="collapsedControl"] {
+                display: flex !important;
+                visibility: visible !important;
+            }
+
+            /* 3. NEECHE ke Red/Green logos aur Footer ko uda dega */
+            [data-testid="stStatusWidget"], 
+            [data-testid="stDecoration"], 
+            .viewerBadge_container__1QSob, 
+            footer {
+                display: none !important;
+            }
             </style>
             """
 st.markdown(hide_st_style, unsafe_allow_html=True)
@@ -545,6 +552,7 @@ Want to see the deep-dive audit? Hit the link in my bio to use my custom screene
             else: st.write("Data not available.")
 
     else: st.error("⚠️ Invalid Asset Symbol. Try searching something like 'TCS'.")
+
 
 
 
