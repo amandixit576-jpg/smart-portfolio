@@ -1,4 +1,15 @@
 import streamlit as st
+# --- HIDE STREAMLIT BRANDING ---
+hide_st_style = """
+            <style>
+            #MainMenu {visibility: hidden;}
+            footer {visibility: hidden;}
+            header {visibility: hidden;}
+            /* Niche wala code extra buttons ko hide karta hai */
+            .viewerBadge_container__1QSob {visibility: hidden;}
+            </style>
+            """
+st.markdown(hide_st_style, unsafe_allow_html=True)
 import yfinance as yf
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
@@ -530,3 +541,4 @@ Want to see the deep-dive audit? Hit the link in my bio to use my custom screene
             else: st.write("Data not available.")
 
     else: st.error("⚠️ Invalid Asset Symbol. Try searching something like 'TCS'.")
+
