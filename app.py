@@ -1,19 +1,15 @@
 import streamlit as st
-# --- SAFE CSS: HIDE ONLY RIGHT-SIDE BRANDING ---
+# --- THE WILDCARD CSS FIX ---
 hide_st_style = """
             <style>
-            /* 1. Upar RIGHT side ka 'Fork', Github aur 3-dots gayab karega */
+            /* 1. Upar Right (Fork/GitHub/3-dots) ko gayab karega */
             [data-testid="stToolbar"] {display: none !important;}
-            .stAppToolbar {display: none !important;}
-
-            /* 2. Upar LEFT side ka '>>' menu button 100% ZINDA rakhega */
-            [data-testid="collapsedControl"] {display: flex !important; visibility: visible !important;}
-
-            /* 3. Neeche RIGHT side ke Red (Crown) aur Green (Status) buttons gayab karega */
-            [data-testid="manage-app-button"] {display: none !important;}
-            .viewerBadge_container__1QSob {display: none !important;}
             
-            /* 4. Sabse neeche ka footer gayab karega */
+            /* 2. Neeche Right (Red/Green logo) ko udane ka Wildcard */
+            div[class^="viewerBadge"] {display: none !important;}
+            [data-testid="stStatusWidget"] {display: none !important;}
+            
+            /* 3. Footer ('Made with Streamlit') ko gayab karega */
             footer {display: none !important;}
             </style>
             """
@@ -549,6 +545,7 @@ Want to see the deep-dive audit? Hit the link in my bio to use my custom screene
             else: st.write("Data not available.")
 
     else: st.error("⚠️ Invalid Asset Symbol. Try searching something like 'TCS'.")
+
 
 
 
