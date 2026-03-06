@@ -1,16 +1,20 @@
 import streamlit as st
-# --- HIDE FORK, MENU & BOTTOM LOGOS ---
+# --- SAFE CSS: HIDE ONLY RIGHT-SIDE BRANDING ---
 hide_st_style = """
             <style>
-            /* 1. Upar Right side ka 'Fork', Github aur 3-dots gayab karega */
-            [data-testid="stToolbar"] {visibility: hidden !important; display: none !important;}
+            /* 1. Upar RIGHT side ka 'Fork', Github aur 3-dots gayab karega */
+            [data-testid="stToolbar"] {display: none !important;}
+            .stAppToolbar {display: none !important;}
+
+            /* 2. Upar LEFT side ka '>>' menu button 100% ZINDA rakhega */
+            [data-testid="collapsedControl"] {display: flex !important; visibility: visible !important;}
+
+            /* 3. Neeche RIGHT side ke Red (Crown) aur Green (Status) buttons gayab karega */
+            [data-testid="manage-app-button"] {display: none !important;}
+            .viewerBadge_container__1QSob {display: none !important;}
             
-            /* 2. Neeche Right side ke Red/Green logos gayab karega */
-            [data-testid="stStatusWidget"] {visibility: hidden !important; display: none !important;}
-            [data-testid="stDecoration"] {visibility: hidden !important; display: none !important;}
-            
-            /* 3. Sabse neeche ka footer gayab karega */
-            footer {visibility: hidden !important; display: none !important;}
+            /* 4. Sabse neeche ka footer gayab karega */
+            footer {display: none !important;}
             </style>
             """
 st.markdown(hide_st_style, unsafe_allow_html=True)
@@ -545,6 +549,7 @@ Want to see the deep-dive audit? Hit the link in my bio to use my custom screene
             else: st.write("Data not available.")
 
     else: st.error("⚠️ Invalid Asset Symbol. Try searching something like 'TCS'.")
+
 
 
 
