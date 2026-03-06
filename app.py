@@ -4,7 +4,17 @@ import os
 
 # Page Config
 st.set_page_config(page_title="DIG Terminal", page_icon="📈", layout="wide")
+# 2. Iske theek niche ye CSS daal do (Branding hatane ke liye)
+hide_st_style = """
+            <style>
+            #MainMenu {visibility: hidden;}
+            footer {visibility: hidden;}
+            header {visibility: hidden;}
+            </style>
+            """
+st.markdown(hide_st_style, unsafe_allow_html=True)
 
+# 3. Baaki ka code (Auth aur Analysis) niche chalne do...
 # Render ke secure locker se chabiyan nikaalna
 SUPABASE_URL = os.environ.get("SUPABASE_URL")
 SUPABASE_KEY = os.environ.get("SUPABASE_KEY")
@@ -56,7 +66,6 @@ import xml.etree.ElementTree as ET
 import pandas as pd
 
 # --- 1. PAGE SETUP & MEMORY ---
-st.set_page_config(page_title="Dixit Investment Group | Screener", layout="wide", initial_sidebar_state="collapsed")
 
 if 'current_view' not in st.session_state: st.session_state.current_view = "HOME"
 if 'portfolio' not in st.session_state: st.session_state.portfolio = pd.DataFrame(columns=["Ticker", "Buy Price", "Quantity", "Hold Type"])
@@ -639,6 +648,7 @@ mega_footer = """
 </div>
 """
 st.markdown(mega_footer, unsafe_allow_html=True)
+
 
 
 
