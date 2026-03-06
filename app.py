@@ -1,15 +1,9 @@
 import streamlit as st
-# --- HIDE STREAMLIT BRANDING (ULTIMATE FIX) ---
+# --- HIDE ONLY FOOTER & DEPLOY BUTTON ---
 hide_st_style = """
             <style>
-            #MainMenu {visibility: hidden;}
             footer {visibility: hidden;}
-            header {visibility: hidden;}
-            /* Ye naye codes saare ziddi buttons ko gayab kar denge */
-            [data-testid="stToolbar"] {display: none !important;}
-            [data-testid="stDecoration"] {display: none !important;}
-            [data-testid="stStatusWidget"] {display: none !important;}
-            .stDeployButton {display: none !important;}
+            .stDeployButton {display: none;}
             </style>
             """
 st.markdown(hide_st_style, unsafe_allow_html=True)
@@ -544,6 +538,7 @@ Want to see the deep-dive audit? Hit the link in my bio to use my custom screene
             else: st.write("Data not available.")
 
     else: st.error("⚠️ Invalid Asset Symbol. Try searching something like 'TCS'.")
+
 
 
 
