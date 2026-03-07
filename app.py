@@ -16,18 +16,23 @@ import pandas as pd
 st.set_page_config(page_title="Dixit Investment Group | Screener", page_icon="logo.png", layout="wide")
 # --- 1.5 SEO & META TAGS FOR GOOGLE/BING SEARCH ---
 seo_meta_tags = """
-<meta name="description" content="Dixit Investment Group (DIG) is a premium quantitative research and stock screener terminal. Analyze Indian NSE stocks, track mutual funds, plan SIPs, and use our AI-powered CA Audit tool for deep fundamental analysis.">
-<meta name="keywords" content="Stock Screener, NSE Stocks, Fundamental Analysis, SIP Calculator, CA Audit, Dixit Investment Group, Financial Terminal">
-<meta name="author" content="Aman Dixit">
-<meta property="og:type" content="website">
-<meta property="og:url" content="https://digscreener.in/">
-<meta property="og:title" content="Dixit Investment Group | Premium Wealth Terminal">
-<meta property="og:description" content="The Modern AI-Powered Screener & Quant Terminal for Indian Investors.">
-<meta property="og:image" content="https://raw.githubusercontent.com/amandixit576-jpg/dig-screener-official/main/logo.png">
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Dixit Investment Group | Premium Wealth Terminal">
-<meta name="twitter:description" content="The Modern AI-Powered Screener & Quant Terminal for Indian Investors.">
-<meta name="twitter:image" content="https://raw.githubusercontent.com/amandixit576-jpg/dig-screener-official/main/logo.png">
+    <head>
+        <meta name="description" content="Dixit Investment Group (DIG) is a premium quantitative research and stock screener terminal. Analyze Indian NSE stocks, track mutual funds, plan SIPs, and use our AI-powered CA Audit tool for deep fundamental analysis.">
+        <meta name="keywords" content="Stock Screener, NSE Stocks, Fundamental Analysis, SIP Calculator, CA Audit, Dixit Investment Group, Financial Terminal">
+        <meta name="author" content="Aman Dixit">
+        
+        <meta property="og:type" content="website">
+        <meta property="og:url" content="https://digscreener.in/">
+        <meta property="og:title" content="Dixit Investment Group | Premium Wealth Terminal">
+        <meta property="og:description" content="The Modern AI-Powered Screener & Quant Terminal for Indian Investors.">
+        
+        <meta property="og:image" content="https://raw.githubusercontent.com/amandixit576-jpg/dig-screener-official/main/logo.png">
+        
+        <meta name="twitter:card" content="summary_large_image">
+        <meta name="twitter:title" content="Dixit Investment Group | Premium Wealth Terminal">
+        <meta name="twitter:description" content="The Modern AI-Powered Screener & Quant Terminal for Indian Investors.">
+        <meta name="twitter:image" content="https://raw.githubusercontent.com/amandixit576-jpg/dig-screener-official/main/logo.png">
+    </head>
 """
 st.markdown(seo_meta_tags, unsafe_allow_html=True)
 
@@ -727,6 +732,7 @@ mega_footer = """
 </div>
 """
 st.markdown(mega_footer, unsafe_allow_html=True)
+
 
 
 
