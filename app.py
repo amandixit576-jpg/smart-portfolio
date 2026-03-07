@@ -446,6 +446,7 @@ else:
         with tab1:
             st.markdown("### 📊 Advanced Technical Chart")
             data['SMA50'] = data['Close'].rolling(50).mean()
+            t_obj = yf.Ticker(user_ticker)
             data['20SMA'] = data['Close'].rolling(20).mean()
             data['Upper_BB'] = data['20SMA'] + 2 * data['Close'].rolling(20).std()
             data['Lower_BB'] = data['20SMA'] - 2 * data['Close'].rolling(20).std()
@@ -710,6 +711,7 @@ mega_footer = """
 </div>
 """
 st.markdown(mega_footer, unsafe_allow_html=True)
+
 
 
 
