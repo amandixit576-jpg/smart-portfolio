@@ -14,6 +14,15 @@ import pandas as pd
 # Naya: page_icon="logo.png"
 
 st.set_page_config(page_title="Dixit Investment Group | Screener", page_icon="logo.png", layout="wide")
+# --- 1.5 SEO & META TAGS FOR GOOGLE/BING SEARCH ---
+seo_meta_tags = """
+    <head>
+        <meta name="description" content="Dixit Investment Group (DIG) is a premium quantitative research and stock screener terminal. Analyze Indian NSE stocks, track mutual funds, plan SIPs, and use our AI-powered CA Audit tool for deep fundamental analysis.">
+        <meta name="keywords" content="Stock Screener, NSE Stocks, Fundamental Analysis, SIP Calculator, CA Audit, Dixit Investment Group, Financial Terminal">
+        <meta name="author" content="Aman Dixit">
+    </head>
+"""
+st.markdown(seo_meta_tags, unsafe_allow_html=True)
 
 if 'current_view' not in st.session_state: st.session_state.current_view = "HOME"
 if 'portfolio' not in st.session_state: st.session_state.portfolio = pd.DataFrame(columns=["Ticker", "Buy Price", "Quantity", "Hold Type"])
@@ -711,6 +720,7 @@ mega_footer = """
 </div>
 """
 st.markdown(mega_footer, unsafe_allow_html=True)
+
 
 
 
