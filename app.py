@@ -34,8 +34,6 @@ st.markdown(seo_meta_tags, unsafe_allow_html=True)
 if 'current_view' not in st.session_state: st.session_state.current_view = "HOME"
 if 'portfolio' not in st.session_state: st.session_state.portfolio = pd.DataFrame(columns=["Ticker", "Buy Price", "Quantity", "Hold Type"])
 
-# --- 2. CSS & BRANDING HIDE ---
-# --- 2. CSS & BRANDING HIDE (TOP NAV STYLING) ---
 # --- 2. CSS & ADAPTIVE THEME (LIGHT/DARK FRIENDLY) ---
 hide_st_style = """
     <style>
@@ -45,7 +43,13 @@ hide_st_style = """
     [data-testid="stToolbarActions"] {display: none !important;}
     [data-testid="collapsedControl"] { display: none !important; }
     section[data-testid="stSidebar"] { display: none !important; }
-    [data-testid="stStatusWidget"], [data-testid="stDecoration"], .viewerBadge_container__1QSob { display: none !important; }
+    
+    /* 🔥 YE NAYI LINES ADD HUI HAIN LOGOS KO HIDE KARNE KE LIYE 🔥 */
+    [data-testid="stAppDeployButton"] { display: none !important; }
+    .stAppDeployButton { display: none !important; }
+    div[class^="viewerBadge_container"] { display: none !important; }
+    .viewerBadge_container__1QSob { display: none !important; }
+    [data-testid="stStatusWidget"], [data-testid="stDecoration"] { display: none !important; }
     
     .block-container { padding-top: 1rem; padding-bottom: 2rem; max-width: 1200px; }
     
@@ -56,7 +60,7 @@ hide_st_style = """
         font-weight: 600 !important;
         font-size: 16px !important;
         padding: 0px !important;
-        color: var(--text-color) !important; /* Adjusts to light/dark */
+        color: var(--text-color) !important;
     }
     div[data-testid="column"] button[kind="secondary"]:hover {
         color: #1E88E5 !important;
@@ -727,6 +731,7 @@ mega_footer = """
 </div>
 """
 st.markdown(mega_footer, unsafe_allow_html=True)
+
 
 
 
