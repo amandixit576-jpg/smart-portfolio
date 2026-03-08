@@ -239,41 +239,6 @@ if st.session_state.current_view == "HOME":
     
     # 👇 Yahan se aapke SIP Planner aur Portfolio ke Tabs shuru honge
     
-    
-  # --- SEARCH ENGINE BLOCK ---
-col1, col2, col3 = st.columns([1, 2, 1])
-
-with col2:
-    man_t = st.text_input("Search", placeholder="🔍 Type a Company Name or NSE Symbol (e.g., ITC)", label_visibility="collapsed", key="search_bar_analysis")
-    
-    # LEVEL 1: Button check
-    if st.button("Search & Analyze", type="primary", use_container_width=True):
-        # LEVEL 2: Input check (Ye line button ke andar 4 spaces aage hai)
-        if man_t:
-            # Ticker cleanup logic
-            ticker = man_t.strip().upper()
-            if not (ticker.endswith(".NS") or ticker.endswith(".BO")):
-                ticker = f"{ticker}.NS"
-            
-            # State update
-            st.session_state.current_view = ticker
-            st.rerun()
-        else:
-            st.warning("Bhai, pehle company ka naam toh likho!")
-        
-        st.markdown("<br>", unsafe_allow_html=True)
-        col_t1, col_t2 = st.columns([1, 4])
-        col_t1.markdown("**Trending:**")
-        with col_t2:
-            t1, t2, t3, t4, t5 = st.columns(5)
-            if t1.button("RELIANCE"): st.session_state.current_view = "RELIANCE.NS"; st.rerun()
-            if t2.button("HDFCBANK"): st.session_state.current_view = "HDFCBANK.NS"; st.rerun()
-            if t3.button("ZOMATO"): st.session_state.current_view = "ZOMATO.NS"; st.rerun()
-            if t4.button("TCS"): st.session_state.current_view = "TCS.NS"; st.rerun()
-            if t5.button("ITC"): st.session_state.current_view = "ITC.NS"; st.rerun()
-
-    st.write("---")
-    
     ht1, ht2 = st.tabs(["🎯 Goal-Based SIP Planner", "💼 My Virtual Portfolio & Tax Audit"])
     with ht1:
         st.markdown("### Plan for your next lifestyle milestone")
@@ -748,6 +713,7 @@ go_to_top_html = """
     </style>
 """
 st.markdown(go_to_top_html, unsafe_allow_html=True)
+
 
 
 
