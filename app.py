@@ -191,9 +191,51 @@ def get_live_news(company_name):
 
 # ---> 🏠 HOME PAGE <---
 if st.session_state.current_view == "HOME":
-    st.markdown('<h1 class="main-title">DIXIT INVESTMENT GROUP</h1>', unsafe_allow_html=True)
-    st.markdown('<p class="sub-title">A Premium Wealth and Portfolio Management Co.</p>', unsafe_allow_html=True)
-    st.markdown('<p class="tag-line">The Modern AI-Powered Screener & Quant Terminal.</p>', unsafe_allow_html=True)
+    
+    # --- 🌟 FINOLOGY STYLE HERO SECTION ---
+    st.write("<br><br>", unsafe_allow_html=True) 
+    st.markdown("<h1 style='text-align: center; color: #1E88E5; font-size: 3rem;'>Investing Ka Search Engine</h1>", unsafe_allow_html=True)
+    st.markdown("<h4 style='text-align: center; color: #555; font-weight: normal;'>The Modern Stock Screener that helps you pick better stocks.</h4>", unsafe_allow_html=True)
+    st.write("<br>", unsafe_allow_html=True)
+
+    # 🔍 BIG CENTERED SEARCH BAR
+    c1, search_col, c3 = st.columns([1, 2, 1])
+    with search_col:
+        search_input = st.text_input("Search", label_visibility="collapsed", placeholder="🔍 Type a Company Name (e.g. ITC) to Search...")
+        if search_input: # Jaise hi user Enter dabayega
+            sym = search_input.upper().strip()
+            if not sym.endswith('.NS'): 
+                sym += '.NS'
+            st.session_state.current_view = sym
+            st.rerun() # Ye line page ko refresh karke Stock Page par le jayegi!
+
+    # 🔘 TRENDING BUTTONS (Neeche wale)
+    st.write("<div style='text-align: center; margin-top: 10px; color: #666;'><b>What's Trending:</b></div>", unsafe_allow_html=True)
+    st.write("<br>", unsafe_allow_html=True)
+    
+    # Center mein buttons laane ke liye empty columns ka use kiya hai
+    t_spacer1, t_btn1, t_btn2, t_btn3, t_btn4, t_spacer2 = st.columns([2, 1, 1, 1, 1, 2])
+    
+    with t_btn1: 
+        if st.button("ITC", use_container_width=True): 
+            st.session_state.current_view = "ITC.NS"
+            st.rerun()
+    with t_btn2: 
+        if st.button("RELIANCE", use_container_width=True): 
+            st.session_state.current_view = "RELIANCE.NS"
+            st.rerun()
+    with t_btn3: 
+        if st.button("HDFCBANK", use_container_width=True): 
+            st.session_state.current_view = "HDFCBANK.NS"
+            st.rerun()
+    with t_btn4:
+        if st.button("ZOMATO", use_container_width=True): 
+            st.session_state.current_view = "ZOMATO.NS"
+            st.rerun()
+            
+    st.write("<br><br><hr>", unsafe_allow_html=True)
+    
+    # 👇 Yahan se neeche aapka purana SIP Planner aur Virtual Portfolio wala code waise hi chalega...
     
   # --- SEARCH ENGINE BLOCK ---
 col1, col2, col3 = st.columns([1, 2, 1])
@@ -682,6 +724,7 @@ go_to_top_html = """
     </style>
 """
 st.markdown(go_to_top_html, unsafe_allow_html=True)
+
 
 
 
