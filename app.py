@@ -60,34 +60,33 @@ hide_st_style = """
         color: #FFFFFF !important;
     }
 
-    /* TOP NAV BUTTONS (Neon Outline) */
-    div[data-testid="column"] button[kind="secondary"] {
+    /* 🔥 THE FIX: ALL SECONDARY BUTTONS (Nav & Trending) 🔥 */
+    div[data-testid="stButton"] button {
+        background-color: #0B0E14 !important; /* Force Black Background */
         border: 1px solid rgba(57, 255, 20, 0.4) !important;
-        background: transparent !important;
-        font-weight: 600 !important;
-        font-size: 16px !important;
-        padding: 5px 15px !important;
-        color: #39FF14 !important; /* Neon Green */
         border-radius: 6px !important;
+        padding: 5px 15px !important;
         transition: 0.3s;
     }
-    div[data-testid="column"] button[kind="secondary"]:hover {
+    div[data-testid="stButton"] button p {
+        color: #39FF14 !important; /* Force Neon Green Text */
+        font-weight: 600 !important;
+        font-size: 16px !important;
+    }
+    div[data-testid="stButton"] button:hover {
         border-color: #39FF14 !important;
-        background: rgba(57, 255, 20, 0.1) !important;
+        background-color: rgba(57, 255, 20, 0.1) !important;
         box-shadow: 0px 0px 12px rgba(57, 255, 20, 0.3);
-        color: #39FF14 !important;
     }
     
-    /* Account/Primary Button (Solid Green) */
+    /* 🔥 THE FIX: PRIMARY BUTTONS (Account, Search) 🔥 */
     div[data-testid="stButton"] button[kind="primary"] { 
-        white-space: nowrap !important; 
-        border-radius: 8px; 
-        padding-left: 10px; 
-        padding-right: 10px; 
         background-color: #39FF14 !important;
-        color: #0B0E14 !important;
-        font-weight: bold !important;
         border: none !important;
+    }
+    div[data-testid="stButton"] button[kind="primary"] p {
+        color: #0B0E14 !important; /* Black Text on Green Button */
+        font-weight: bold !important;
     }
     
     /* TEXT COLORS */
@@ -771,6 +770,7 @@ mega_footer = """
 </div>
 """
 st.markdown(mega_footer, unsafe_allow_html=True)
+
 
 
 
