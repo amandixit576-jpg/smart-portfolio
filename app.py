@@ -325,8 +325,9 @@ if st.session_state.current_view != "HOME":
         
         # --- 🌟 FINOLOGY STYLE PREMIUM HEADER ---
         company_name = info.get('longName', info.get('shortName', user_ticker.replace('.NS', '')))
-        sector = info.get('sector', 'N/A')
-        industry = info.get('industry', 'N/A')
+        display_name = company_name  # 👈 Isko aage khiskana hai
+        sector = info.get('sector', 'N/A') # 👈 Isko bhi aage khiskana hai
+        industry = info.get('industry', 'N/A') # 👈 Isko bhi aage khiskana hai
         
         st.markdown(f"<span style='color: #888; font-size: 14px;'>DIG Terminal > Company > <b style='color: #00E570;'>{user_ticker.replace('.NS', '')} Share Price</b></span>", unsafe_allow_html=True)
         st.markdown(f"<h1 style='margin-top: -10px; margin-bottom: 5px; font-size: 2.8rem;'>{company_name}</h1>", unsafe_allow_html=True)
@@ -723,6 +724,7 @@ go_to_top_html = """
     </style>
 """
 st.markdown(go_to_top_html, unsafe_allow_html=True)
+
 
 
 
