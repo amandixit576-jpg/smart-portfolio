@@ -34,87 +34,85 @@ st.markdown(seo_meta_tags, unsafe_allow_html=True)
 if 'current_view' not in st.session_state: st.session_state.current_view = "HOME"
 if 'portfolio' not in st.session_state: st.session_state.portfolio = pd.DataFrame(columns=["Ticker", "Buy Price", "Quantity", "Hold Type"])
 
-# --- 2. CSS & ADAPTIVE THEME (CYBER-TERMINAL NEON) ---
+# --- 2. CSS & ADAPTIVE THEME (UPTIMEROBOT SAAS THEME) ---
 hide_st_style = """
     <style>
-    /* 🔥 1. YAHAN AAPKA PURANA HIDE KARNE WALA CODE EKDUM SAFE HAI 🔥 */
-    #MainMenu {visibility: hidden;}
-    footer {visibility: hidden;}
-    header {visibility: hidden;}
-    [data-testid="stToolbarActions"] {display: none !important;}
-    [data-testid="collapsedControl"] { display: none !important; }
-    section[data-testid="stSidebar"] { display: none !important; }
-    
-    [data-testid="stAppDeployButton"] { display: none !important; }
-    .stAppDeployButton { display: none !important; }
-    div[class^="viewerBadge_container"] { display: none !important; }
-    .viewerBadge_container__1QSob { display: none !important; }
-    [data-testid="stStatusWidget"], [data-testid="stDecoration"] { display: none !important; }
-    
-    .block-container { padding-top: 1rem; padding-bottom: 2rem; max-width: 1200px; }
-    
-    /* 🟢 2. YAHAN SE NAYI THEME SHURU (OBSIDIAN & NEON) 🟢 */
-    /* Global Background */
+    /* 🔥 Hide Streamlit Branding 🔥 */
+    #MainMenu, footer, header {visibility: hidden; height: 0px;}
+    [data-testid="stToolbarActions"], [data-testid="collapsedControl"], section[data-testid="stSidebar"] {display: none !important;}
+    [data-testid="stAppDeployButton"], .stAppDeployButton {display: none !important;}
+    div[class^="viewerBadge_container"], .viewerBadge_container__1QSob {display: none !important;}
+    [data-testid="stStatusWidget"], [data-testid="stDecoration"] {display: none !important;}
+
+    /* 🟢 UPTIMEROBOT PREMIUM SAAS THEME 🟢 */
+    /* Global Background (Deep Slate instead of pure black) */
     .stApp {
-        background-color: #0B0E14 !important;
-        color: #FFFFFF !important;
+        background-color: #111827 !important;
+        color: #F3F4F6 !important;
     }
 
-    /* 🔥 THE FIX: ALL SECONDARY BUTTONS (Nav & Trending) 🔥 */
-    div[data-testid="stButton"] button {
-        background-color: #0B0E14 !important; /* Force Black Background */
-        border: 1px solid rgba(57, 255, 20, 0.4) !important;
-        border-radius: 6px !important;
-        padding: 5px 15px !important;
-        transition: 0.3s;
+    .block-container { padding-top: 1rem; padding-bottom: 2rem; max-width: 1200px; }
+
+    /* 🔥 SEARCH BAR FIX 🔥 */
+    div[data-baseweb="input"] > div {
+        background-color: #1F2937 !important;
+        border: 1px solid #374151 !important;
+        border-radius: 8px !important;
     }
-    div[data-testid="stButton"] button p {
-        color: #39FF14 !important; /* Force Neon Green Text */
+    input { color: #F3F4F6 !important; }
+
+    /* 🔥 NORMAL BUTTONS (Nav, Trending) - Fix for White Boxes 🔥 */
+    div[data-testid="stButton"] button[kind="secondary"] {
+        background-color: #1F2937 !important; /* Soft Dark Grey */
+        border: 1px solid #374151 !important;
+        border-radius: 24px !important; /* Pill Shape like UptimeRobot */
+        padding: 5px 20px !important;
+        transition: all 0.3s ease;
+    }
+    div[data-testid="stButton"] button[kind="secondary"] p {
+        color: #9CA3AF !important; /* Slate Grey Text */
         font-weight: 600 !important;
-        font-size: 16px !important;
+        font-size: 15px !important;
     }
-    div[data-testid="stButton"] button:hover {
-        border-color: #39FF14 !important;
-        background-color: rgba(57, 255, 20, 0.1) !important;
-        box-shadow: 0px 0px 12px rgba(57, 255, 20, 0.3);
+    div[data-testid="stButton"] button[kind="secondary"]:hover {
+        border-color: #00E570 !important; /* Modern SaaS Green */
+        background-color: rgba(0, 229, 112, 0.05) !important;
     }
-    
-    /* 🔥 THE FIX: PRIMARY BUTTONS (Account, Search) 🔥 */
+    div[data-testid="stButton"] button[kind="secondary"]:hover p {
+        color: #00E570 !important;
+    }
+
+    /* 🔥 PRIMARY BUTTON (Search & Account) 🔥 */
     div[data-testid="stButton"] button[kind="primary"] { 
-        background-color: #39FF14 !important;
+        background-color: #00E570 !important; /* Modern SaaS Green */
         border: none !important;
+        border-radius: 24px !important; /* Pill Shape */
+        box-shadow: 0 4px 14px 0 rgba(0, 229, 112, 0.2) !important;
     }
     div[data-testid="stButton"] button[kind="primary"] p {
-        color: #0B0E14 !important; /* Black Text on Green Button */
+        color: #111827 !important; /* Dark Text */
         font-weight: bold !important;
     }
-    
-    /* TEXT COLORS */
-    .main-title { text-align: center; color: #39FF14 !important; font-size: 3.5rem; font-weight: 800; margin-bottom: 0px; font-family: 'Arial Black', sans-serif; letter-spacing: -1.5px; text-shadow: 0px 0px 20px rgba(57, 255, 20, 0.3);}
-    .sub-title { text-align: center; color: #FFFFFF !important; font-size: 1.2rem; font-weight: 700; margin-top: 0px; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 2px; opacity: 0.9;}
-    .tag-line { text-align: center; color: #A0AEC0 !important; font-size: 1rem; font-weight: 500; margin-top: 0px; margin-bottom: 30px; font-style: italic;}
-    
-    /* THEME BASKETS (Dark Box + Green Hover) */
-    .basket-card { border: 1px solid rgba(57, 255, 20, 0.2); padding: 15px; border-radius: 10px; background: #161B22 !important; text-align: center; margin-bottom: 10px; height: 130px; transition: 0.3s;}
-    .basket-card:hover { border-color: #39FF14; transform: translateY(-3px); }
-    .basket-title { color: #39FF14 !important; font-weight: 700; font-size: 1.1rem; }
-    .basket-card p { font-size: 0.9rem; color: #FFFFFF !important; margin-top: 5px; opacity: 0.8;}
 
-    /* COMPANY METRICS (Institutional Style) */
-    div[data-testid="stMetric"] {
-        background-color: #161B22 !important;
-        padding: 15px; 
-        border-radius: 10px;
-        border-left: 5px solid #39FF14 !important;
+    /* TEXT COLORS */
+    .main-title { text-align: center; color: #00E570 !important; font-size: 3.5rem; font-weight: 800; margin-bottom: 0px; font-family: 'Segoe UI', sans-serif; letter-spacing: -1.5px;}
+    .sub-title { text-align: center; color: #F3F4F6 !important; font-size: 1.2rem; font-weight: 600; margin-top: 0px; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 2px; opacity: 0.9;}
+    .tag-line { text-align: center; color: #9CA3AF !important; font-size: 1rem; font-weight: 400; margin-top: 0px; margin-bottom: 30px; font-style: italic;}
+
+    /* CARDS & METRICS (Sleek Dark Boxes) */
+    .basket-card, div[data-testid="stMetric"] { 
+        background-color: #1F2937 !important; 
+        border: 1px solid #374151 !important; 
+        border-radius: 12px !important; 
     }
-    div[data-testid="stMetricValue"] > div { color: #39FF14 !important; }
+    div[data-testid="stMetric"] { border-left: 4px solid #00E570 !important; padding: 15px; }
+    .basket-card:hover { border-color: #00E570 !important; transform: translateY(-2px); }
+    .basket-title, div[data-testid="stMetricValue"] > div { color: #00E570 !important; }
+    .basket-card p { color: #9CA3AF !important; }
 
     /* TABS STYLING */
-    button[data-baseweb="tab"] { color: #A0AEC0 !important; border-bottom: 2px solid transparent !important; }
-    button[aria-selected="true"] { 
-        color: #39FF14 !important; 
-        border-bottom-color: #39FF14 !important; 
-    }
+    button[data-baseweb="tab"] { color: #9CA3AF !important; }
+    button[aria-selected="true"] { color: #00E570 !important; border-bottom-color: #00E570 !important; }
     </style>
 """
 st.markdown(hide_st_style, unsafe_allow_html=True)
@@ -770,6 +768,7 @@ mega_footer = """
 </div>
 """
 st.markdown(mega_footer, unsafe_allow_html=True)
+
 
 
 
