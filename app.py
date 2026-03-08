@@ -556,7 +556,11 @@ with col2:
             st.caption("ℹ️ *Tax estimator reflects new Indian Budget rules: 20% for STCG and 12.5% for LTCG.*")
 
 # ---> 📊 STOCK ANALYSIS ENGINE (TICKER-STYLE UI) <---
-else:
+if st.session_state.current_view not in ["HOME", "COMPARE", "MUTUAL_FUNDS", "BASKETS", "MY_ACCOUNT"]:
+    user_ticker = st.session_state.current_view
+
+    with st.spinner("Executing Quant Models..."):
+        data = fetch_stock_history(user_ticker)
     user_ticker = st.session_state.current_view
 
     with st.spinner("Executing Quant Models..."):
@@ -944,6 +948,7 @@ go_to_top_html = """
     </style>
 """
 st.markdown(go_to_top_html, unsafe_allow_html=True)
+
 
 
 
