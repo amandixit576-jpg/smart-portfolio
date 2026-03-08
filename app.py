@@ -466,9 +466,17 @@ elif st.session_state.current_view == "HOME":
     with col2:
         man_t = st.text_input("Search", placeholder="🔍 Type a Company Name or NSE Symbol (e.g., ITC)", label_visibility="collapsed")
         if st.button("Search & Analyze", type="primary", use_container_width=True):
-            if man_t:
-                st.session_state.current_view = man_t.upper() if man_t.upper().endswith(".NS") else f"{man_t.upper()}.NS"
-                st.rerun()
+
+    if man_t:
+
+        ticker = man_t.strip().upper()
+
+        if not ticker.endswith(".NS"):
+            ticker = ticker + ".NS"
+
+        st.session_state.current_view = ticker
+
+        st.rerun()
         
         st.markdown("<br>", unsafe_allow_html=True)
         col_t1, col_t2 = st.columns([1, 4])
@@ -842,8 +850,8 @@ Want to see the deep-dive audit? Hit the link in my bio to use my custom screene
                 else: st.success(f"✅ **Healthy:** Current Ratio is {round(cr, 2)}, indicating sufficient short-term liquidity.")
             else: st.write("Data not available.")
 
-    else: st.error("⚠️ Invalid Asset Symbol. Try searching something like 'TCS'.")
-
+    else:
+    st.warning("⚠️ Stock data unavailable right now. Try another NSE symbol like TCS, ITC, INFY.")
 # --- 6. MEGA FOOTER ---
 mega_footer = """
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -934,6 +942,7 @@ go_to_top_html = """
     </style>
 """
 st.markdown(go_to_top_html, unsafe_allow_html=True)
+
 
 
 
