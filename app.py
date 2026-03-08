@@ -51,7 +51,7 @@ hide_st_style = """
         color: #F3F4F6 !important;
     }
 
-    .block-container { padding-top: 1rem; padding-bottom: 2rem; max-width: 1200px; }
+    .block-container { padding-top: 1rem; padding-bottom: 2rem; max-width: 96% !important; }
 
     /* 🔥 SEARCH BAR FIX 🔥 */
     div[data-baseweb="input"] > div {
@@ -768,6 +768,7 @@ mega_footer = """
 </div>
 """
 st.markdown(mega_footer, unsafe_allow_html=True)
+
 
 
 
