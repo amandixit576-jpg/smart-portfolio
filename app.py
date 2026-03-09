@@ -651,10 +651,10 @@ mega_footer = """
 </div>
 <div class="footer-col">
   <h4>Terminal Tools</h4>
-  <a href="/" target="_self">Market Dashboard</a>
-  <a href="/" target="_self">Stock Screener</a>
-  <a href="/" target="_self">SIP Goal Planner</a>
+  <a href="/Compare" target="_self">Smart Peer Compare</a>
   <a href="/Intrinsic_Value" target="_self">DCF Calculator</a>
+  <a href="/Forensic_Audit" target="_self">Forensic Audit 🕵️‍♂️</a>
+  <a href="/Tax_Audit" target="_self">Tax Audit & Portfolio</a>
 </div>
 <div class="footer-col">
   <h4>Legal & Support</h4>
@@ -701,6 +701,7 @@ go_to_top_html = """
     </style>
 """
 st.markdown(go_to_top_html, unsafe_allow_html=True)
+
 
 
 
