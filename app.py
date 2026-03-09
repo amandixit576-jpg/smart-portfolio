@@ -123,28 +123,6 @@ st.markdown(hide_st_style, unsafe_allow_html=True)
 
 import requests
 
-# --- 3. TOP MARKET BAR ---
-@st.cache_data(ttl=300)
-def get_index_data(ticker):
-    try: return yf.Ticker(ticker).history(period="2d")
-    except: return None
-
-nifty, sensex, banknifty = get_index_data("^NSEI"), get_index_data("^BSESN"), get_index_data("^NSEBANK")
-
-def display_index(col, name, data):
-    if data is not None and len(data) >= 2:
-        curr, prev = data['Close'].iloc[-1], data['Close'].iloc[-2]
-        chg, pct = curr - prev, ((curr - prev)/prev)*100
-        color = "#16A34A" if chg >= 0 else "#DC2626"
-        sign = "+" if chg >= 0 else ""
-        col.markdown(f"**{name}**: ₹{format_inr(round(curr, 2))} <span style='color:{color}; font-weight:bold;'>({sign}{pct:.2f}%)</span>", unsafe_allow_html=True)
-
-st.markdown("<br>", unsafe_allow_html=True) 
-top1, top2, top3, top4 = st.columns([1, 2, 2, 2])
-display_index(top2, "SENSEX", sensex)
-display_index(top3, "NIFTY 50", nifty)
-display_index(top4, "BANKNIFTY", banknifty)
-st.write("---")
 
 # --- 4. LEAD GENERATION & SIDEBAR ---
 TOP_STOCKS = {"RELIANCE.NS": "Reliance", "TCS.NS": "TCS", "HDFCBANK.NS": "HDFC Bank", "INFY.NS": "Infosys", "ZOMATO.NS": "Zomato", "ITC.NS": "ITC", "SBIN.NS": "SBI"}
@@ -723,6 +701,7 @@ go_to_top_html = """
     </style>
 """
 st.markdown(go_to_top_html, unsafe_allow_html=True)
+
 
 
 
