@@ -652,7 +652,8 @@ mega_footer = """
 <div class="footer-col">
   <h4>Terminal Tools</h4>
   <a href="/Custom_Screener" target="_self">Stock Screener 🎛️</a>
-  <a href="/Financial_Statements" target="_self">5-Year Financials 📚</a> <a href="/Compare" target="_self">Smart Peer Compare</a>
+  <a href="/Financial_Statements" target="_self">5-Year Financials 📚</a>
+  <a href="/Shareholding" target="_self">Shareholding 👥</a> <a href="/Compare" target="_self">Smart Peer Compare</a>
   <a href="/Intrinsic_Value" target="_self">DCF Calculator</a>
   <a href="/Forensic_Audit" target="_self">Forensic Audit 🕵️‍♂️</a>
   <a href="/Tax_Audit" target="_self">Tax Audit & Portfolio</a>
@@ -702,6 +703,7 @@ go_to_top_html = """
     </style>
 """
 st.markdown(go_to_top_html, unsafe_allow_html=True)
+
 
 
 
