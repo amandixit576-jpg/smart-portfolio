@@ -636,7 +636,7 @@ mega_footer = """
 <div class="brand-title">⚜️ DIXIT INVESTMENT GROUP</div>
 <p style="font-size: 13px; line-height: 1.7; text-align: justify;">Dixit Investment Group (DIG) is a premier quantitative research and portfolio management terminal designed for modern value investors and financial professionals. Built on the principles of deep fundamental analysis and data-driven investing, DIG provides institutional-grade market screeners, real-time SIP planning, and comprehensive tax audit tools. Our mission is to democratize elite financial analytics, empowering retail investors to make calculated, risk-adjusted decisions in the Indian equity markets.</p>
 <div class="social-icons">
-<a href="https://instagram.com/aman_creats" target="_blank" title="Instagram"><i class="fab fa-instagram"></i></a>
+<a href="https://instagram.com/digscreener.in" target="_blank" title="Instagram"><i class="fab fa-instagram"></i></a>
 <a href="https://www.linkedin.com/in/amandixit29" target="_blank" title="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
 <a href="#" target="_blank" title="Twitter/X"><i class="fab fa-x-twitter"></i></a>
 <a href="#" target="_blank" title="YouTube"><i class="fab fa-youtube"></i></a>
@@ -701,6 +701,7 @@ go_to_top_html = """
     </style>
 """
 st.markdown(go_to_top_html, unsafe_allow_html=True)
+
 
 
 
