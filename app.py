@@ -383,19 +383,42 @@ if st.session_state.current_view != "HOME":
                 st.markdown("#### Company Essentials")
                 st.write("")
                 e1, e2, e3 = st.columns(3)
-                e1.metric("MARKET CAP", f"₹{format_large_number(info.get('marketCap'))}")
-                e2.metric("ENTERPRISE VAL", f"₹{format_large_number(info.get('enterpriseValue'))}")
-                e3.metric("P/E RATIO", round(info.get('trailingPE', 0), 2) if info.get('trailingPE') else "N/A")
-                st.write("")
-                e4, e5, e6 = st.columns(3)
-                e4.metric("DIV. YIELD", f"{round(info.get('dividendYield', 0)*100, 2)}%" if info.get('dividendYield') else "0.00%")
-                e5.metric("BOOK VALUE", f"₹{format_inr(round(info.get('bookValue', 0), 2))}" if info.get('bookValue') else "N/A")
-                e6.metric("FACE VALUE", f"₹{info.get('regularMarketPrice', 1)}") 
-                st.write("")
-                e7, e8, e9 = st.columns(3)
-                e7.metric("DEBT", f"₹{format_large_number(info.get('totalDebt', 0))}")
-                e8.metric("ROE", f"{round(info.get('returnOnEquity', 0)*100, 2)}%" if info.get('returnOnEquity') else "N/A")
-                e9.metric("ROCE", f"{round(info.get('returnOnCapitalEmployed', 0)*100, 2)}%" if info.get('returnOnCapitalEmployed') else "N/A")
+            
+            # Market Cap & EV ko seedha Crores (Cr) mein convert kiya taaki text na kate
+            mcap = info.get('marketCap', 0)
+            e1.metric("MARKET CAP", f"₹{mcap/10000000:,.0f} Cr" if mcap else "N/A")
+            
+            eval_val = info.get('enterpriseValue', 0)
+            e2.metric("ENTERPRISE VAL", f"₹{eval_val/10000000:,.0f} Cr" if eval_val else "N/A")
+            
+            pe = info.get('trailingPE')
+            e3.metric("P/E RATIO", round(pe, 2) if pe else "N/A")
+            
+            st.write("")
+            e4, e5, e6 = st.columns(3)
+            
+            div_yield = info.get('dividendYield')
+            e4.metric("DIV. YIELD", f"{round(div_yield * 100, 2)}%" if div_yield else "0.00%")
+            
+            bv = info.get('bookValue')
+            e5.metric("BOOK VALUE", f"₹{round(bv, 2)}" if bv else "N/A")
+            
+            # Yahan asali galti thi! Face value hata kar ab hum EPS dikha rahe hain
+            eps = info.get('trailingEPS')
+            e6.metric("EPS (TTM)", f"₹{round(eps, 2)}" if eps else "N/A")
+            
+            st.write("")
+            e7, e8, e9 = st.columns(3)
+            
+            # Debt ko bhi Crores (Cr) mein dikhayenge
+            debt = info.get('totalDebt', 0)
+            e7.metric("DEBT", f"₹{debt/10000000:,.0f} Cr" if debt else "N/A")
+            
+            roe = info.get('returnOnEquity')
+            e8.metric("ROE", f"{round(roe * 100, 2)}%" if roe else "N/A")
+            
+            roce = info.get('returnOnCapitalEmployed')
+            e9.metric("ROCE", f"{round(roce * 100, 2)}%" if roce else "N/A")
 
         st.write("---")
         data['SMA50'] = data['Close'].rolling(50).mean()
@@ -703,6 +726,7 @@ go_to_top_html = """
     </style>
 """
 st.markdown(go_to_top_html, unsafe_allow_html=True)
+
 
 
 
