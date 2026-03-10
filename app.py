@@ -171,18 +171,20 @@ def premium_signup():
 # --- TOP NAVIGATION BAR (TICKER STYLE) ---
 nav1, nav2, nav3, nav4, nav5, nav6, nav7, nav8 = st.columns([1.5, 1, 1, 1, 1, 1.5, 1.5, 1.2])
 
-with nav1: st.markdown("<a href='/' target='_self' style='text-decoration: none;'><h4 style='color:#1E88E5; margin-top:5px; margin-bottom:0px;'>⚜️ DIG</h4></a>", unsafe_allow_html=True)
-with nav2: 
-    if st.button("Home", use_container_width=True): 
-        st.session_state.current_view = "HOME"
-        st.rerun()
-with nav3: 
-    if st.button("Compare", use_container_width=True): st.switch_page("pages/1_Compare.py")
-with nav4: 
-    if st.button("MFs", use_container_width=True): st.switch_page("pages/2_Mutual_Funds.py")
-with nav5: 
-    if st.button("Baskets", use_container_width=True): st.switch_page("pages/3_Baskets.py")
-with nav6: st.empty() 
+# DIG logo ko thoda bada kiya aur straight line ke liye margin set kiya
+with nav1: 
+    st.markdown("<a href='/' target='_self' style='text-decoration: none;'><h3 style='color:#1E88E5; margin-top: 0px; margin-bottom: 0px;'>⚜️ DIG</h3></a>", unsafe_allow_html=True)
+    
+# Buttons hata kar pure linkable text laga diye with perfect alignment
+link_style = "color: #a1a1aa; text-decoration: none; font-weight: 600; font-size: 16px; display: inline-block; margin-top: 8px;"
+with nav2: st.markdown(f"<a href='/' target='_self' style='{link_style}'>Home</a>", unsafe_allow_html=True)
+with nav3: st.markdown(f"<a href='/Compare' target='_self' style='{link_style}'>Compare</a>", unsafe_allow_html=True)
+with nav4: st.markdown(f"<a href='/Mutual_Funds' target='_self' style='{link_style}'>MFs</a>", unsafe_allow_html=True)
+with nav5: st.markdown(f"<a href='/Baskets' target='_self' style='{link_style}'>Baskets</a>", unsafe_allow_html=True)
+
+with nav6: st.empty()
+
+# Premium aur Account wale buttons wahi rahenge
 with nav7: 
     if st.button("👑 Premium", use_container_width=True): premium_signup()
 with nav8: 
@@ -220,7 +222,7 @@ ticker_data = fetch_live_ticker()
 # Patti ko chalane wala HTML & CSS Code
 if ticker_data:
     st.markdown(f"""
-    <div style="background-color: #000000; padding: 10px 0; border-top: 1px solid #374151; border-bottom: 1px solid #374151; margin-bottom: 25px;">
+    <div style="background-color: transparent; padding: 10px 0; margin-bottom: 25px;">
         <marquee direction="left" scrollamount="6" onmouseover="this.stop();" onmouseout="this.start();">
             {ticker_data}
         </marquee>
@@ -797,6 +799,7 @@ go_to_top_html = """
     </style>
 """
 st.markdown(go_to_top_html, unsafe_allow_html=True)
+
 
 
 
