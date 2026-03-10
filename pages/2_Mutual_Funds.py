@@ -5,6 +5,12 @@ from utils.formatters import format_inr
 
 # Har page par Streamlit config zaroori hai
 st.set_page_config(page_title="Mutual Funds | DIG", page_icon="📈", layout="wide")
+# --- HIDE DEFAULT STREAMLIT SIDEBAR MENU ---
+st.markdown("""
+    <style>
+        [data-testid="stSidebarNav"] {display: none;}
+    </style>
+""", unsafe_allow_html=True)
 
 st.markdown("<h2 style='color:#1E88E5;'>📈 Mutual Fund Tracker</h2>", unsafe_allow_html=True)
 st.write("---")
