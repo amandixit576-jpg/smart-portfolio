@@ -1,6 +1,12 @@
 import streamlit as st
 
 st.set_page_config(page_title="Careers | DIG", page_icon="⚜️", layout="wide")
+# --- HIDE DEFAULT STREAMLIT SIDEBAR MENU ---
+st.markdown("""
+    <style>
+        [data-testid="stSidebarNav"] {display: none;}
+    </style>
+""", unsafe_allow_html=True)
 
 st.write("<br><br>", unsafe_allow_html=True)
 st.markdown("<h1 style='text-align: center; color: #1E88E5; font-size: 3.5rem;'>⚜️ Careers</h1>", unsafe_allow_html=True)
