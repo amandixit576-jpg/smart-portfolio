@@ -2,6 +2,12 @@ import streamlit as st
 
 # Har page par Streamlit config sabse upar
 st.set_page_config(page_title="Theme Baskets | DIG", page_icon="🧺", layout="wide")
+# --- HIDE DEFAULT STREAMLIT SIDEBAR MENU ---
+st.markdown("""
+    <style>
+        [data-testid="stSidebarNav"] {display: none;}
+    </style>
+""", unsafe_allow_html=True)
 
 st.markdown("<h2 style='color:#1E88E5;'>🧺 Ready-Made Theme Baskets</h2>", unsafe_allow_html=True)
 st.write("Invest in ideas, not just single stocks. Explore top sectors and themes driving the market.")
