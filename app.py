@@ -808,6 +808,21 @@ go_to_top_html = """
     </style>
 """
 st.markdown(go_to_top_html, unsafe_allow_html=True)
+st.write("---")
+# Trust Columns
+t1, t2, t3 = st.columns(3)
+
+with t1:
+    st.markdown("#### 🛰️ Institutional Data")
+    st.caption("Real-time equity feeds synced via **Yahoo Finance Institutional API**.")
+
+with t2:
+    st.markdown("#### ⚖️ Compliance")
+    st.caption("DIG Terminal is for research only. **Investments are subject to market risks.**")
+
+with t3:
+    st.markdown("#### 🛡️ Audit Ready")
+    st.caption("Financial ratios are calculated using **Standard Audit Practices**.")
 
 
 
