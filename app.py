@@ -252,18 +252,18 @@ if st.session_state.current_view == "HOME":
     # 🔍 SINGLE BIG SEARCH BAR + GREEN BUTTON
     c1, search_col, c3 = st.columns([1, 2, 1])
     with search_col:
-        search_input = st.text_input("Search", label_visibility="collapsed", placeholder="🔍 Type a Company Name or NSE Symbol (e.g., ITC)")
-        
-        # Ye 'type="primary"' aapke button ko wahi mast Green color dega!
-        if st.button("Search & Analyze", type="primary", use_container_width=True):
-            if search_input: 
-                sym = search_input.upper().strip()
-                if not (sym.endswith('.NS') or sym.endswith('.BO')): 
-                    sym += '.NS'
-                st.session_state.current_view = sym
+            selected_stock = st.selectbox(
+                "Search Company",
+                options=NSE_SYMBOLS,
+                index=None,
+                placeholder="🔍 Type Company Name (e.g. ZOMATO, RELIANCE)",
+                label_visibility="collapsed"
+            )
+
+            # Jaise hi user dropdown se select karega, page load ho jayega (Button ki zaroorat khatam!)
+            if selected_stock:
+                st.session_state.current_view = selected_stock
                 st.rerun()
-            else:
-                st.warning("Bhai, pehle company ka naam toh likho!")
 
     # 🔘 TRENDING BUTTONS (Ab click karne pe mast kaam karenge)
     st.write("<div style='text-align: center; margin-top: 15px; color: #888;'><b>What's Trending:</b></div>", unsafe_allow_html=True)
@@ -808,6 +808,7 @@ go_to_top_html = """
     </style>
 """
 st.markdown(go_to_top_html, unsafe_allow_html=True)
+
 
 
 
