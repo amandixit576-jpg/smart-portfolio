@@ -11,7 +11,7 @@ import pandas as pd
 # 🔥 NAYE MODULAR IMPORTS 🔥
 from services.stock_data import fetch_safe_info, fetch_stock_history, fetch_financials
 from utils.formatters import format_inr, format_large_number, format_df_to_crores
-
+from utils.symbols import NSE_SYMBOLS
 # --- 1. PAGE SETUP & MEMORY ---
 # Purana: page_icon="📈"
 # Naya: page_icon="logo.png"
@@ -808,6 +808,7 @@ go_to_top_html = """
     </style>
 """
 st.markdown(go_to_top_html, unsafe_allow_html=True)
+
 
 
 
