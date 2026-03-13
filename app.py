@@ -11,7 +11,27 @@ import pandas as pd
 # 🔥 NAYE MODULAR IMPORTS 🔥
 from services.stock_data import fetch_safe_info, fetch_stock_history, fetch_financials
 from utils.formatters import format_inr, format_large_number, format_df_to_crores
-from utils.symbols import NSE_SYMBOLS
+
+# --- 🌍 LIVE STOCK DATABASE (ZERODHA KITE API) ---
+@st.cache_data(ttl=86400) # Din mein sirf 1 baar fetch karega taaki site super-fast rahe!
+def fetch_all_stocks():
+    try:
+        # Zerodha ka daily update hone wala public database
+        url = "https://api.kite.trade/instruments"
+        df = pd.read_csv(url)
+        
+        # Sirf NSE ke 'Equity' (EQ) stocks filter kar rahe hain
+        nse_equities = df[(df['exchange'] == 'NSE') & (df['instrument_type'] == 'EQ')]
+        
+        # Sabke naam ke aage '.NS' laga rahe hain taaki Yahoo Finance data de sake
+        stock_list = (nse_equities['tradingsymbol'] + ".NS").tolist()
+        return stock_list
+    except:
+        # Agar kabhi Zerodha ka server down ho, toh ye backup kaam aayega
+        return ["RELIANCE.NS", "TCS.NS", "HDFCBANK.NS", "INFY.NS", "ZOMATO.NS", "ITC.NS"]
+
+# Nayi list ko humare dropdown variable se jod diya
+NSE_SYMBOLS = fetch_all_stocks()
 # --- 1. PAGE SETUP & MEMORY ---
 # Purana: page_icon="📈"
 # Naya: page_icon="logo.png"
