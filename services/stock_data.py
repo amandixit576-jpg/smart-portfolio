@@ -13,14 +13,24 @@ session.headers.update({
 
 @st.cache_data(ttl=3600, show_spinner=False)
 def fetch_safe_info(ticker_symbol):
-    try:
-        t = yf.Ticker(ticker_symbol, session=session)
-        inf = t.info
-        # Backup Check: Agar info khali hai, toh retry with fresh session
-        if not inf or len(inf) < 10:
-            st.cache_data.clear() 
-        return inf if inf else {}
-    except: return {}
+    import time # Local import taaki code smoothly chale
+    
+    # API ko 3 baar try karne ka chance denge (Smart Retry Logic)
+    for attempt in range(3):
+        try:
+            t = yf.Ticker(ticker_symbol, session=session)
+            inf = t.info
+            
+            # Agar data theek se aa gaya (कम से कम 10 values)
+            if inf and len(inf) > 10:
+                return inf
+            else:
+                time.sleep(0.5) # Agar Yahoo ne block kiya, toh 0.5 sec ruk kar dobara maangega
+        except:
+            time.sleep(1) # Error aane par 1 sec saans lega aur retry karega
+            
+    # Agar 3 baar mein bhi fail ho jaye tabhi khali return karega
+    return {}
 
 @st.cache_data(ttl=3600, show_spinner=False)
 def fetch_stock_history(ticker_symbol, period="1y"):
