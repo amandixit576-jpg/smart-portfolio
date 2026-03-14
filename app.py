@@ -799,35 +799,59 @@ mega_footer = """
 </div>
 """
 st.markdown(mega_footer, unsafe_allow_html=True)
-# --- 7. FLOATING "GO TO TOP" BUTTON ---
-go_to_top_html = """
-    <a href="#" id="gototopBtn" title="Go to top">⬆</a>
+# --- ⬆️ FLOATING "GO TO TOP" BUTTON (FIXED) ---
+st.markdown("""
     <style>
-    #gototopBtn {
+    /* Button ki Styling - DIG Theme */
+    .scroll-to-top {
         position: fixed;
         bottom: 40px;
         right: 40px;
-        z-index: 9999;
-        background-color: #00E570; /* SaaS Mint Green */
+        background-color: #00E570; /* Aapka SaaS Mint Green */
         color: #111827 !important; /* Deep Slate */
-        text-decoration: none;
-        padding: 12px 18px;
-        border-radius: 50%; /* Perfect Circle */
-        font-size: 22px;
-        font-weight: bold;
-        box-shadow: 0 4px 14px 0 rgba(0, 229, 112, 0.4);
-        transition: all 0.3s ease;
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
         text-align: center;
+        line-height: 50px;
+        font-size: 24px;
+        font-weight: bold;
+        cursor: pointer;
+        z-index: 9999;
+        box-shadow: 0 4px 14px 0 rgba(0, 229, 112, 0.4);
+        border: none;
+        transition: all 0.3s ease;
     }
-    #gototopBtn:hover {
+    .scroll-to-top:hover {
         background-color: #1F2937; /* Dark Grey on Hover */
         color: #00E570 !important;
         border: 2px solid #00E570;
-        transform: scale(1.1); /* Halka sa bada hoga hover pe */
+        transform: scale(1.1);
     }
     </style>
-"""
-st.markdown(go_to_top_html, unsafe_allow_html=True)
+
+    <button onclick="scrollToTop()" class="scroll-to-top" title="Go to top">
+        ↑
+    </button>
+
+    <script>
+    function scrollToTop() {
+        // Streamlit ke scrollable container ko target karta hai
+        const mainContent = window.parent.document.querySelector('.main');
+        if (mainContent) {
+            mainContent.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        } else {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        }
+    }
+    </script>
+""", unsafe_allow_html=True)
 st.write("---")
 # Trust Columns
 t1, t2, t3 = st.columns(3)
