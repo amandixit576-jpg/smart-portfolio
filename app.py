@@ -81,7 +81,7 @@ hide_st_style = """
         color: #F3F4F6 !important;
     }
 
-    .block-container { padding-top: 1rem; padding-bottom: 2rem; max-width: 98% !important; }
+    .block-container { padding-top: 1rem; padding-bottom: 2rem; max-width: 99% !important; }
 
     /* 🔥 SEARCH BAR FIX 🔥 */
     div[data-baseweb="input"] > div {
