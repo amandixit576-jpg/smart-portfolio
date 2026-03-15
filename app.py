@@ -619,40 +619,40 @@ if st.session_state.current_view != "HOME":
                     fin_df = t_obj.financials
                     if not fin_df.empty:
                     # 1. Dates ko saaf karna (e.g., "2024-03-31" to "MAR 2024")
-                    fin_df.columns = pd.to_datetime(fin_df.columns).strftime('%b %Y').str.upper()
-
-                    # 2. Indian Standard format mapping (Proper Sequence)
-                    desired_order = {
-                        "Total Revenue": "Net Sales / Revenue",
-                        "Cost Of Revenue": "Total Expenditure",
-                        "Gross Profit": "Gross Profit",
-                        "Operating Income": "Operating Profit",
-                        "Other Income Expense": "Other Income",
-                        "Interest Expense": "Interest",
-                        "Reconciled Depreciation": "Depreciation",
-                        "Pretax Income": "Profit Before Tax",
-                        "Tax Provision": "Tax",
-                        "Net Income": "Net Profit",
-                        "Basic EPS": "Adjusted EPS (Rs.)"
-                    }
-
-                    organized_data = {}
-                    for yf_key, display_name in desired_order.items():
-                        if yf_key in fin_df.index:
-                            organized_data[display_name] = fin_df.loc[yf_key]
-                        else:
-                            organized_data[display_name] = pd.Series(pd.NA, index=fin_df.columns)
-
-                    # DataFrame banana aur Rows/Cols set karna
-                    pl_df = pd.DataFrame(organized_data).T
-
-                    # 3. N/A wale purane saalo ko hide karna
-                    pl_df = pl_df.dropna(axis=1, how='all')
-
-                    # 4. Aapka custom Crore formatter use karke display karna
-                    st.dataframe(format_df_to_crores(pl_df), use_container_width=True)
-                else:
-                    st.warning("Income Statement data not available.")
+                        fin_df.columns = pd.to_datetime(fin_df.columns).strftime('%b %Y').str.upper()
+    
+                        # 2. Indian Standard format mapping (Proper Sequence)
+                        desired_order = {
+                            "Total Revenue": "Net Sales / Revenue",
+                            "Cost Of Revenue": "Total Expenditure",
+                            "Gross Profit": "Gross Profit",
+                            "Operating Income": "Operating Profit",
+                            "Other Income Expense": "Other Income",
+                            "Interest Expense": "Interest",
+                            "Reconciled Depreciation": "Depreciation",
+                            "Pretax Income": "Profit Before Tax",
+                            "Tax Provision": "Tax",
+                            "Net Income": "Net Profit",
+                            "Basic EPS": "Adjusted EPS (Rs.)"
+                        }
+    
+                        organized_data = {}
+                        for yf_key, display_name in desired_order.items():
+                            if yf_key in fin_df.index:
+                                organized_data[display_name] = fin_df.loc[yf_key]
+                            else:
+                                organized_data[display_name] = pd.Series(pd.NA, index=fin_df.columns)
+    
+                        # DataFrame banana aur Rows/Cols set karna
+                        pl_df = pd.DataFrame(organized_data).T
+    
+                        # 3. N/A wale purane saalo ko hide karna
+                        pl_df = pl_df.dropna(axis=1, how='all')
+    
+                        # 4. Aapka custom Crore formatter use karke display karna
+                        st.dataframe(format_df_to_crores(pl_df), use_container_width=True)
+                    else:
+                        st.warning("Income Statement data not available.")
                 except Exception as e:
                 st.warning(f"Error fetching Income Statement: {e}")
             with stmt2:
