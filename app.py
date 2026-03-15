@@ -654,127 +654,127 @@ if st.session_state.current_view != "HOME":
                     else:
                         st.warning("Income Statement data not available.")
                 except Exception as e:
-                st.warning(f"Error fetching Income Statement: {e}")
+                    st.warning(f"Error fetching Income Statement: {e}")
             with stmt2:
                 try:
                 # Yahan hum 'quarterly_financials' fetch kar rahe hain
-                q_fin_df = t_obj.quarterly_financials
-                if not q_fin_df.empty:
-                    # 1. Dates ko saaf karna (e.g., "DEC 2024")
-                    q_fin_df.columns = pd.to_datetime(q_fin_df.columns).strftime('%b %Y').str.upper()
-
-                    # 2. Indian Standard format mapping
-                    desired_order_q = {
-                        "Total Revenue": "Net Sales / Revenue",
-                        "Cost Of Revenue": "Total Expenditure",
-                        "Gross Profit": "Gross Profit",
-                        "Operating Income": "Operating Profit",
-                        "Other Income Expense": "Other Income",
-                        "Interest Expense": "Interest",
-                        "Reconciled Depreciation": "Depreciation",
-                        "Pretax Income": "Profit Before Tax",
-                        "Tax Provision": "Tax",
-                        "Net Income": "Net Profit",
-                        "Basic EPS": "Adjusted EPS (Rs.)"
-                    }
-
-                    organized_q_data = {}
-                    for yf_key, display_name in desired_order_q.items():
-                        if yf_key in q_fin_df.index:
-                            organized_q_data[display_name] = q_fin_df.loc[yf_key]
-                        else:
-                            organized_q_data[display_name] = pd.Series(pd.NA, index=q_fin_df.columns)
-
-                    # DataFrame banana
-                    q_pl_df = pd.DataFrame(organized_q_data).T
-
-                    # 3. N/A wale purane quarters ko hide karna
-                    q_pl_df = q_pl_df.dropna(axis=1, how='all')
-
-                    # 4. Display karna
-                    st.dataframe(format_df_to_crores(q_pl_df), use_container_width=True)
-                else:
-                    st.warning("Quarterly Income Statement data not available.")
-                except Exception as e:
-                st.warning(f"Error fetching Quarterly Income Statement: {e}")
+                    q_fin_df = t_obj.quarterly_financials
+                    if not q_fin_df.empty:
+                        # 1. Dates ko saaf karna (e.g., "DEC 2024")
+                        q_fin_df.columns = pd.to_datetime(q_fin_df.columns).strftime('%b %Y').str.upper()
+    
+                        # 2. Indian Standard format mapping
+                        desired_order_q = {
+                            "Total Revenue": "Net Sales / Revenue",
+                            "Cost Of Revenue": "Total Expenditure",
+                            "Gross Profit": "Gross Profit",
+                            "Operating Income": "Operating Profit",
+                            "Other Income Expense": "Other Income",
+                            "Interest Expense": "Interest",
+                            "Reconciled Depreciation": "Depreciation",
+                            "Pretax Income": "Profit Before Tax",
+                            "Tax Provision": "Tax",
+                            "Net Income": "Net Profit",
+                            "Basic EPS": "Adjusted EPS (Rs.)"
+                        }
+    
+                        organized_q_data = {}
+                        for yf_key, display_name in desired_order_q.items():
+                            if yf_key in q_fin_df.index:
+                                organized_q_data[display_name] = q_fin_df.loc[yf_key]
+                            else:
+                                organized_q_data[display_name] = pd.Series(pd.NA, index=q_fin_df.columns)
+    
+                        # DataFrame banana
+                        q_pl_df = pd.DataFrame(organized_q_data).T
+    
+                        # 3. N/A wale purane quarters ko hide karna
+                        q_pl_df = q_pl_df.dropna(axis=1, how='all')
+    
+                        # 4. Display karna
+                        st.dataframe(format_df_to_crores(q_pl_df), use_container_width=True)
+                    else:
+                        st.warning("Quarterly Income Statement data not available.")
+                    except Exception as e:
+                    st.warning(f"Error fetching Quarterly Income Statement: {e}")
             with stmt3:
                 try:
-                bs_df = t_obj.balance_sheet
-                if not bs_df.empty:
-                    # 1. Dates ko saaf karna (e.g., "MAR 2024")
-                    bs_df.columns = pd.to_datetime(bs_df.columns).strftime('%b %Y').str.upper()
-
-                    # 2. Indian Standard format mapping for Balance Sheet
-                    desired_order_bs = {
-                        "Common Stock Equity": "Share Capital & Equity",
-                        "Retained Earnings": "Reserves & Surplus",
-                        "Total Debt": "Total Borrowings",
-                        "Other Non Current Liabilities": "Other N/C Liabilities",
-                        "Current Liabilities": "Current Liabilities",
-                        "Total Liabilities Net Minority Interest": "Total Liabilities",
-                        "Net PPE": "Net Block (Fixed Assets)",
-                        "Investments And Advances": "Investments",
-                        "Current Assets": "Current Assets",
-                        "Total Assets": "Total Assets"
-                    }
-
-                    organized_bs = {}
-                    for yf_key, display_name in desired_order_bs.items():
-                        if yf_key in bs_df.index:
-                            organized_bs[display_name] = bs_df.loc[yf_key]
-                        else:
-                            organized_bs[display_name] = pd.Series(pd.NA, index=bs_df.columns)
-
-                    # DataFrame banana aur Rows/Cols set karna
-                    clean_bs_df = pd.DataFrame(organized_bs).T
-
-                    # 3. N/A wale purane saalo ko hide karna
-                    clean_bs_df = clean_bs_df.dropna(axis=1, how='all')
-
-                    # 4. Aapka custom Crore formatter use karke display karna
-                    st.dataframe(format_df_to_crores(clean_bs_df), use_container_width=True)
-                else:
-                    st.warning("Balance Sheet data not available.")
-                except Exception as e:
-                st.warning(f"Error fetching Balance Sheet: {e}")
+                    bs_df = t_obj.balance_sheet
+                    if not bs_df.empty:
+                        # 1. Dates ko saaf karna (e.g., "MAR 2024")
+                        bs_df.columns = pd.to_datetime(bs_df.columns).strftime('%b %Y').str.upper()
+    
+                        # 2. Indian Standard format mapping for Balance Sheet
+                        desired_order_bs = {
+                            "Common Stock Equity": "Share Capital & Equity",
+                            "Retained Earnings": "Reserves & Surplus",
+                            "Total Debt": "Total Borrowings",
+                            "Other Non Current Liabilities": "Other N/C Liabilities",
+                            "Current Liabilities": "Current Liabilities",
+                            "Total Liabilities Net Minority Interest": "Total Liabilities",
+                            "Net PPE": "Net Block (Fixed Assets)",
+                            "Investments And Advances": "Investments",
+                            "Current Assets": "Current Assets",
+                            "Total Assets": "Total Assets"
+                        }
+    
+                        organized_bs = {}
+                        for yf_key, display_name in desired_order_bs.items():
+                            if yf_key in bs_df.index:
+                                organized_bs[display_name] = bs_df.loc[yf_key]
+                            else:
+                                organized_bs[display_name] = pd.Series(pd.NA, index=bs_df.columns)
+    
+                        # DataFrame banana aur Rows/Cols set karna
+                        clean_bs_df = pd.DataFrame(organized_bs).T
+    
+                        # 3. N/A wale purane saalo ko hide karna
+                        clean_bs_df = clean_bs_df.dropna(axis=1, how='all')
+    
+                        # 4. Aapka custom Crore formatter use karke display karna
+                        st.dataframe(format_df_to_crores(clean_bs_df), use_container_width=True)
+                    else:
+                        st.warning("Balance Sheet data not available.")
+                    except Exception as e:
+                    st.warning(f"Error fetching Balance Sheet: {e}")
             with stmt4:
                 try:
-                cf_df = t_obj.cashflow
-                if not cf_df.empty:
-                    # 1. Dates ko saaf karna (e.g., "MAR 2024")
-                    cf_df.columns = pd.to_datetime(cf_df.columns).strftime('%b %Y').str.upper()
-
-                    # 2. Format mapping for Cash Flow
-                    desired_order_cf = {
-                        "Net Income From Continuing Operations": "Net Profit",
-                        "Depreciation And Amortization": "Depreciation / Non-Cash",
-                        "Change In Working Capital": "Changes in Working Capital",
-                        "Operating Cash Flow": "Operating Cash Flow",
-                        "Capital Expenditure": "Capital Expenditure (CAPEX)",
-                        "Investing Cash Flow": "Investing Cash Flow",
-                        "Financing Cash Flow": "Financing Cash Flow",
-                        "Changes In Cash": "Net Cash Flow"
-                    }
-
-                    organized_cf = {}
-                    for yf_key, display_name in desired_order_cf.items():
-                        if yf_key in cf_df.index:
-                            organized_cf[display_name] = cf_df.loc[yf_key]
-                        else:
-                            organized_cf[display_name] = pd.Series(pd.NA, index=cf_df.columns)
-
-                    # DataFrame banana
-                    clean_cf_df = pd.DataFrame(organized_cf).T
-
-                    # 3. N/A wale purane saalo ko hide karna
-                    clean_cf_df = clean_cf_df.dropna(axis=1, how='all')
-
-                    # 4. Aapka custom Crore formatter use karke display karna
-                    st.dataframe(format_df_to_crores(clean_cf_df), use_container_width=True)
-                else:
-                    st.warning("Cash Flow data not available.")
-            except Exception as e:
-                st.warning(f"Error fetching Cash Flow: {e}")
+                    cf_df = t_obj.cashflow
+                    if not cf_df.empty:
+                        # 1. Dates ko saaf karna (e.g., "MAR 2024")
+                        cf_df.columns = pd.to_datetime(cf_df.columns).strftime('%b %Y').str.upper()
+    
+                        # 2. Format mapping for Cash Flow
+                        desired_order_cf = {
+                            "Net Income From Continuing Operations": "Net Profit",
+                            "Depreciation And Amortization": "Depreciation / Non-Cash",
+                            "Change In Working Capital": "Changes in Working Capital",
+                            "Operating Cash Flow": "Operating Cash Flow",
+                            "Capital Expenditure": "Capital Expenditure (CAPEX)",
+                            "Investing Cash Flow": "Investing Cash Flow",
+                            "Financing Cash Flow": "Financing Cash Flow",
+                            "Changes In Cash": "Net Cash Flow"
+                        }
+    
+                        organized_cf = {}
+                        for yf_key, display_name in desired_order_cf.items():
+                            if yf_key in cf_df.index:
+                                organized_cf[display_name] = cf_df.loc[yf_key]
+                            else:
+                                organized_cf[display_name] = pd.Series(pd.NA, index=cf_df.columns)
+    
+                        # DataFrame banana
+                        clean_cf_df = pd.DataFrame(organized_cf).T
+    
+                        # 3. N/A wale purane saalo ko hide karna
+                        clean_cf_df = clean_cf_df.dropna(axis=1, how='all')
+    
+                        # 4. Aapka custom Crore formatter use karke display karna
+                        st.dataframe(format_df_to_crores(clean_cf_df), use_container_width=True)
+                    else:
+                        st.warning("Cash Flow data not available.")
+                except Exception as e:
+                    st.warning(f"Error fetching Cash Flow: {e}")
 
         with tab4:
             st.markdown("### 📅 Recent Dividends & Corporate Actions")
