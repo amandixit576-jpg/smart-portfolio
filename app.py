@@ -657,11 +657,45 @@ if st.session_state.current_view != "HOME":
             except Exception as e:
                 st.warning(f"Error fetching Income Statement: {e}")
             with stmt2:
-                try:
-                    bs_df = t_obj.balance_sheet
-                    if not bs_df.empty: st.dataframe(format_df_to_crores(bs_df.dropna(how='all')), use_container_width=True)
-                    else: st.warning("Balance Sheet data not available.")
-                except: st.warning("Error fetching Balance Sheet.")
+            try:
+                bs_df = t_obj.balance_sheet
+                if not bs_df.empty:
+                    # 1. Dates ko saaf karna (e.g., "MAR 2024")
+                    bs_df.columns = pd.to_datetime(bs_df.columns).strftime('%b %Y').str.upper()
+
+                    # 2. Indian Standard format mapping for Balance Sheet
+                    desired_order_bs = {
+                        "Common Stock Equity": "Share Capital & Equity",
+                        "Retained Earnings": "Reserves & Surplus",
+                        "Total Debt": "Total Borrowings",
+                        "Other Non Current Liabilities": "Other N/C Liabilities",
+                        "Current Liabilities": "Current Liabilities",
+                        "Total Liabilities Net Minority Interest": "Total Liabilities",
+                        "Net PPE": "Net Block (Fixed Assets)",
+                        "Investments And Advances": "Investments",
+                        "Current Assets": "Current Assets",
+                        "Total Assets": "Total Assets"
+                    }
+
+                    organized_bs = {}
+                    for yf_key, display_name in desired_order_bs.items():
+                        if yf_key in bs_df.index:
+                            organized_bs[display_name] = bs_df.loc[yf_key]
+                        else:
+                            organized_bs[display_name] = pd.Series(pd.NA, index=bs_df.columns)
+
+                    # DataFrame banana aur Rows/Cols set karna
+                    clean_bs_df = pd.DataFrame(organized_bs).T
+
+                    # 3. N/A wale purane saalo ko hide karna
+                    clean_bs_df = clean_bs_df.dropna(axis=1, how='all')
+
+                    # 4. Aapka custom Crore formatter use karke display karna
+                    st.dataframe(format_df_to_crores(clean_bs_df), use_container_width=True)
+                else:
+                    st.warning("Balance Sheet data not available.")
+            except Exception as e:
+                st.warning(f"Error fetching Balance Sheet: {e}")
 
         with tab4:
             st.markdown("### 📅 Recent Dividends & Corporate Actions")
