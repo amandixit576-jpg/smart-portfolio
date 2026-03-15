@@ -619,7 +619,7 @@ if st.session_state.current_view != "HOME":
                     fin_df = t_obj.financials
                     if not fin_df.empty:
                     # 1. Dates ko saaf karna (e.g., "2024-03-31" to "MAR 2024")
-                        fin_df.columns = pd.to_datetime(fin_df.columns).strftime('%b %Y').str.upper()
+                        fin_df.columns = [d.strftime('%b %Y').upper() for d in pd.to_datetime(fin_df.columns)]
     
                         # 2. Indian Standard format mapping (Proper Sequence)
                         desired_order = {
@@ -661,7 +661,7 @@ if st.session_state.current_view != "HOME":
                     q_fin_df = t_obj.quarterly_financials
                     if not q_fin_df.empty:
                         # 1. Dates ko saaf karna (e.g., "DEC 2024")
-                        q_fin_df.columns = pd.to_datetime(q_fin_df.columns).strftime('%b %Y').str.upper()
+                        q_fin_df.columns = [d.strftime('%b %Y').upper() for d in pd.to_datetime(q_fin_df.columns)]
     
                         # 2. Indian Standard format mapping
                         desired_order_q = {
@@ -702,7 +702,7 @@ if st.session_state.current_view != "HOME":
                     bs_df = t_obj.balance_sheet
                     if not bs_df.empty:
                         # 1. Dates ko saaf karna (e.g., "MAR 2024")
-                        bs_df.columns = pd.to_datetime(bs_df.columns).strftime('%b %Y').str.upper()
+                        bs_df.columns = [d.strftime('%b %Y').upper() for d in pd.to_datetime(bs_df.columns)]
     
                         # 2. Indian Standard format mapping for Balance Sheet
                         desired_order_bs = {
@@ -742,7 +742,7 @@ if st.session_state.current_view != "HOME":
                     cf_df = t_obj.cashflow
                     if not cf_df.empty:
                         # 1. Dates ko saaf karna (e.g., "MAR 2024")
-                        cf_df.columns = pd.to_datetime(cf_df.columns).strftime('%b %Y').str.upper()
+                        cf_df.columns = [d.strftime('%b %Y').upper() for d in pd.to_datetime(cf_df.columns)]
     
                         # 2. Format mapping for Cash Flow
                         desired_order_cf = {
