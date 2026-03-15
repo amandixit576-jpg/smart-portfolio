@@ -695,7 +695,7 @@ if st.session_state.current_view != "HOME":
                         st.dataframe(format_df_to_crores(q_pl_df), use_container_width=True)
                     else:
                         st.warning("Quarterly Income Statement data not available.")
-                    except Exception as e:
+                except Exception as e:
                     st.warning(f"Error fetching Quarterly Income Statement: {e}")
             with stmt3:
                 try:
@@ -735,7 +735,7 @@ if st.session_state.current_view != "HOME":
                         st.dataframe(format_df_to_crores(clean_bs_df), use_container_width=True)
                     else:
                         st.warning("Balance Sheet data not available.")
-                    except Exception as e:
+                except Exception as e:
                     st.warning(f"Error fetching Balance Sheet: {e}")
             with stmt4:
                 try:
