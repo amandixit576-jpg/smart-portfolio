@@ -616,8 +616,8 @@ if st.session_state.current_view != "HOME":
             stmt1, stmt2, stmt3, stmt4 = st.tabs(["Annual P&L", "Quarterly P&L", "Balance Sheet", "Cash Flows"])
             with stmt1:
                 try:
-                fin_df = t_obj.financials
-                if not fin_df.empty:
+                    fin_df = t_obj.financials
+                    if not fin_df.empty:
                     # 1. Dates ko saaf karna (e.g., "2024-03-31" to "MAR 2024")
                     fin_df.columns = pd.to_datetime(fin_df.columns).strftime('%b %Y').str.upper()
 
