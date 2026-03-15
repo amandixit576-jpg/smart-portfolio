@@ -799,16 +799,15 @@ mega_footer = """
 </div>
 """
 st.markdown(mega_footer, unsafe_allow_html=True)
-# --- ⬆️ FLOATING "GO TO TOP" BUTTON (FIXED) ---
+# --- ⬆️ FLOATING "GO TO TOP" BUTTON (BULLETPROOF FIX) ---
 st.markdown("""
     <style>
-    /* Button ki Styling - DIG Theme */
     .scroll-to-top {
         position: fixed;
         bottom: 40px;
         right: 40px;
-        background-color: #00E570; /* Aapka SaaS Mint Green */
-        color: #111827 !important; /* Deep Slate */
+        background-color: #00E570;
+        color: #111827 !important;
         width: 50px;
         height: 50px;
         border-radius: 50%;
@@ -817,13 +816,13 @@ st.markdown("""
         font-size: 24px;
         font-weight: bold;
         cursor: pointer;
-        z-index: 9999;
+        z-index: 99999;
         box-shadow: 0 4px 14px 0 rgba(0, 229, 112, 0.4);
         border: none;
         transition: all 0.3s ease;
     }
     .scroll-to-top:hover {
-        background-color: #1F2937; /* Dark Grey on Hover */
+        background-color: #1F2937;
         color: #00E570 !important;
         border: 2px solid #00E570;
         transform: scale(1.1);
@@ -836,18 +835,16 @@ st.markdown("""
 
     <script>
     function scrollToTop() {
-        // Streamlit ke scrollable container ko target karta hai
-        const mainContent = window.parent.document.querySelector('.main');
-        if (mainContent) {
-            mainContent.scrollTo({
-                top: 0,
-                behavior: 'smooth'
-            });
+        // Streamlit ke naye structure ko target karne ka tareeka
+        var appNode = window.parent.document.querySelector('[data-testid="stAppViewContainer"]');
+        var mainNode = window.parent.document.querySelector('.main');
+        
+        if (appNode) {
+            appNode.scrollTo({top: 0, behavior: 'smooth'});
+        } else if (mainNode) {
+            mainNode.scrollTo({top: 0, behavior: 'smooth'});
         } else {
-            window.scrollTo({
-                top: 0,
-                behavior: 'smooth'
-            });
+            window.parent.scrollTo({top: 0, behavior: 'smooth'});
         }
     }
     </script>
