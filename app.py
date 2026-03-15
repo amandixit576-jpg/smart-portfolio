@@ -653,7 +653,7 @@ if st.session_state.current_view != "HOME":
                     st.dataframe(format_df_to_crores(pl_df), use_container_width=True)
                 else:
                     st.warning("Income Statement data not available.")
-            except Exception as e:
+                except Exception as e:
                 st.warning(f"Error fetching Income Statement: {e}")
             with stmt2:
                 try:
