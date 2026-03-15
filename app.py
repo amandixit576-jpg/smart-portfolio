@@ -618,8 +618,9 @@ if st.session_state.current_view != "HOME":
                 try:
                     fin_df = t_obj.financials
                     if not fin_df.empty:
+                        fin_df = fin_df.loc[:, ~fin_df.columns.duplicated()]
                     # 1. Dates ko saaf karna (e.g., "2024-03-31" to "MAR 2024")
-                        fin_df.columns = [f"{d.strftime('%b').upper()}_{i}" for i, d in enumerate(pd.to_datetime(fin_df.columns))]
+                        fin_df.columns = [d.strftime('%b %Y').upper() for d in pd.to_datetime(fin_df.columns)]
     
                         # 2. Indian Standard format mapping (Proper Sequence)
                         desired_order = {
@@ -660,6 +661,7 @@ if st.session_state.current_view != "HOME":
                 # Yahan hum 'quarterly_financials' fetch kar rahe hain
                     q_fin_df = t_obj.quarterly_financials
                     if not q_fin_df.empty:
+                        q_fin_df = q_fin_df.loc[:, ~q_fin_df.columns.duplicated()]
                         # 1. Dates ko saaf karna (e.g., "DEC 2024")
                         q_fin_df.columns = [d.strftime('%b %Y').upper() for d in pd.to_datetime(q_fin_df.columns)]
     
@@ -701,6 +703,7 @@ if st.session_state.current_view != "HOME":
                 try:
                     bs_df = t_obj.balance_sheet
                     if not bs_df.empty:
+                        bs_df = bs_df.loc[:, ~bs_df.columns.duplicated()]
                         # 1. Dates ko saaf karna (e.g., "MAR 2024")
                         bs_df.columns = [d.strftime('%b %Y').upper() for d in pd.to_datetime(bs_df.columns)]
     
@@ -741,6 +744,7 @@ if st.session_state.current_view != "HOME":
                 try:
                     cf_df = t_obj.cashflow
                     if not cf_df.empty:
+                        cf_df = cf_df.loc[:, ~cf_df.columns.duplicated()]
                         # 1. Dates ko saaf karna (e.g., "MAR 2024")
                         cf_df.columns = [d.strftime('%b %Y').upper() for d in pd.to_datetime(cf_df.columns)]
     
