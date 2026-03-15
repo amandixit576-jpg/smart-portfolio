@@ -615,8 +615,7 @@ if st.session_state.current_view != "HOME":
             st.markdown("### 📑 Annual Financial Statements (In Crores)")
             stmt1, stmt2, stmt3 = st.tabs(["Annual P&L", "Quarterly P&L", "Balance Sheet"])
             with stmt1:
-                with stmt1:
-            try:
+               try:
                 fin_df = t_obj.financials
                 if not fin_df.empty:
                     # 1. Dates ko saaf karna (e.g., "2024-03-31" to "MAR 2024")
@@ -657,7 +656,7 @@ if st.session_state.current_view != "HOME":
             except Exception as e:
                 st.warning(f"Error fetching Income Statement: {e}")
             with stmt2:
-            try:
+               try:
                 # Yahan hum 'quarterly_financials' fetch kar rahe hain
                 q_fin_df = t_obj.quarterly_financials
                 if not q_fin_df.empty:
@@ -699,7 +698,7 @@ if st.session_state.current_view != "HOME":
             except Exception as e:
                 st.warning(f"Error fetching Quarterly Income Statement: {e}")
             with stmt3:
-            try:
+               try:
                 bs_df = t_obj.balance_sheet
                 if not bs_df.empty:
                     # 1. Dates ko saaf karna (e.g., "MAR 2024")
