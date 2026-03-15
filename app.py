@@ -619,7 +619,7 @@ if st.session_state.current_view != "HOME":
                     fin_df = t_obj.financials
                     if not fin_df.empty:
                     # 1. Dates ko saaf karna (e.g., "2024-03-31" to "MAR 2024")
-                        fin_df.columns = [f"{d.month_name()[:3].upper()} {d.year}" for d in pd.to_datetime(fin_df.columns)]
+                        fin_df.columns = [f"{d.strftime('%b').upper()}_{i}" for i, d in enumerate(pd.to_datetime(fin_df.columns))]
     
                         # 2. Indian Standard format mapping (Proper Sequence)
                         desired_order = {
