@@ -716,22 +716,53 @@ Want to see the deep-dive audit? Hit the link in my bio to use my custom screene
             st.markdown("### 🧑‍💼 CA's Audit Desk (Advanced Risk Lens)")
             st.caption("Forensic level checks to identify working capital stress and governance red flags.")
             
+            # Safe data extraction (Aapke existing 'info' variable se)
             ocf = info.get('operatingCashflow')
             net_inc = info.get('netIncomeToCommon')
-            
-            st.markdown("#### 1. Earnings Quality Check")
+            current_ratio = info.get('currentRatio')
+            debt_to_equity = info.get('debtToEquity')
+
+            # --- 1. Liquidity & Solvency Audit ---
+            st.markdown("#### 1. Liquidity & Solvency Audit")
+            col1, col2 = st.columns(2)
+
+            with col1:
+                st.markdown("**Current Ratio (Liquidity):**")
+                if current_ratio is not None and pd.notna(current_ratio):
+                    if current_ratio >= 1.5:
+                        st.success(f"✅ **{round(current_ratio, 2)}** (Healthy - Safe Working Capital)")
+                    elif current_ratio >= 1.0:
+                        st.warning(f"⚠️ **{round(current_ratio, 2)}** (Moderate - Needs Monitoring)")
+                    else:
+                        st.error(f"❌ **{round(current_ratio, 2)}** (High Risk - Short Term Liquidity Stress)")
+                else:
+                    st.info("Current Ratio data not available.")
+
+            with col2:
+                st.markdown("**Debt-to-Equity (Solvency):**")
+                if debt_to_equity is not None and pd.notna(debt_to_equity):
+                    # Adjust if Yahoo Finance gives percentage (e.g., 45.5 instead of 0.45)
+                    d_e_val = debt_to_equity / 100 if debt_to_equity > 5 else debt_to_equity
+                    if d_e_val < 0.5:
+                        st.success(f"✅ **{round(d_e_val, 2)}** (Low Debt - Excellent Solvency)")
+                    elif d_e_val <= 1.5:
+                        st.warning(f"⚠️ **{round(d_e_val, 2)}** (Moderate Debt - Acceptable)")
+                    else:
+                        st.error(f"❌ **{round(d_e_val, 2)}** (High Debt - Financial Risk)")
+                else:
+                    st.info("Debt-to-Equity data not available.")
+
+            # --- 2. Earnings Quality Check (Cash vs Paper Profit) ---
+            st.markdown("#### 2. Earnings Quality Check")
             if pd.notna(ocf) and pd.notna(net_inc) and ocf != 0:
-                if net_inc > 0 and ocf < 0: st.error("🚩 **Red Flag:** The company is reporting paper profits, but actual Operating Cash Flow is NEGATIVE.")
-                elif ocf > net_inc: st.success("✅ **Clean:** Operating Cash Flow is higher than Net Income, indicating high-quality cash realization.")
-                else: st.info("⚖️ **Standard:** Cash flow aligns relatively closely with reported income.")
-            else: st.info("Detailed cash flow audit data is currently unavailable on free tier.")
-                
-            st.markdown("#### 2. Liquidity & Solvency Audit")
-            cr = info.get('currentRatio')
-            if pd.notna(cr):
-                if cr < 1: st.warning(f"⚠️ **Caution:** Current Ratio is {round(cr, 2)}. Short-term liabilities exceed short-term assets.")
-                else: st.success(f"✅ **Healthy:** Current Ratio is {round(cr, 2)}, indicating sufficient short-term liquidity.")
-            else: st.write("Data not available.")
+                if net_inc > 0 and ocf < 0:
+                    st.error(f"❌ **Red Flag:** Company reported Paper Profits, but Actual Operating Cash Flow is NEGATIVE.")
+                elif ocf > net_inc:
+                    st.success(f"✅ **Clean:** Operating Cash Flow is higher than Net Income, indicating high-quality cash realization.")
+                else:
+                    st.warning(f"⚠️ **Standard:** Cash flow aligns relatively closely with reported income.")
+            else:
+                st.info("Detailed cash flow audit data is currently unavailable on free tier.")
 
     else:
         st.warning("⚠️ Stock data unavailable right now. Try another NSE symbol like TCS, ITC, INFY.")
