@@ -613,7 +613,7 @@ if st.session_state.current_view != "HOME":
 
         with tab3:
             st.markdown("### 📑 Annual Financial Statements (In Crores)")
-            stmt1, stmt2 = st.tabs(["Income Statement", "Balance Sheet"])
+            stmt1, stmt2, stmt3 = st.tabs(["Annual P&L", "Quarterly P&L", "Balance Sheet"])
             with stmt1:
                 with stmt1:
             try:
@@ -657,6 +657,48 @@ if st.session_state.current_view != "HOME":
             except Exception as e:
                 st.warning(f"Error fetching Income Statement: {e}")
             with stmt2:
+            try:
+                # Yahan hum 'quarterly_financials' fetch kar rahe hain
+                q_fin_df = t_obj.quarterly_financials
+                if not q_fin_df.empty:
+                    # 1. Dates ko saaf karna (e.g., "DEC 2024")
+                    q_fin_df.columns = pd.to_datetime(q_fin_df.columns).strftime('%b %Y').str.upper()
+
+                    # 2. Indian Standard format mapping
+                    desired_order_q = {
+                        "Total Revenue": "Net Sales / Revenue",
+                        "Cost Of Revenue": "Total Expenditure",
+                        "Gross Profit": "Gross Profit",
+                        "Operating Income": "Operating Profit",
+                        "Other Income Expense": "Other Income",
+                        "Interest Expense": "Interest",
+                        "Reconciled Depreciation": "Depreciation",
+                        "Pretax Income": "Profit Before Tax",
+                        "Tax Provision": "Tax",
+                        "Net Income": "Net Profit",
+                        "Basic EPS": "Adjusted EPS (Rs.)"
+                    }
+
+                    organized_q_data = {}
+                    for yf_key, display_name in desired_order_q.items():
+                        if yf_key in q_fin_df.index:
+                            organized_q_data[display_name] = q_fin_df.loc[yf_key]
+                        else:
+                            organized_q_data[display_name] = pd.Series(pd.NA, index=q_fin_df.columns)
+
+                    # DataFrame banana
+                    q_pl_df = pd.DataFrame(organized_q_data).T
+
+                    # 3. N/A wale purane quarters ko hide karna
+                    q_pl_df = q_pl_df.dropna(axis=1, how='all')
+
+                    # 4. Display karna
+                    st.dataframe(format_df_to_crores(q_pl_df), use_container_width=True)
+                else:
+                    st.warning("Quarterly Income Statement data not available.")
+            except Exception as e:
+                st.warning(f"Error fetching Quarterly Income Statement: {e}")
+            with stmt3:
             try:
                 bs_df = t_obj.balance_sheet
                 if not bs_df.empty:
