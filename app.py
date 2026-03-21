@@ -630,9 +630,9 @@ if st.session_state.current_view != "HOME":
                     fin_df = t_obj.financials
                     if not fin_df.empty:
                         # 1. Dates ko 'MAR 2024' format mein convert karna (Bulletproof)
-                    fin_df.columns = [pd.to_datetime(str(d)).strftime('%b %Y').upper() for d in fin_df.columns]
-                    # 2. Security Guard: Duplicate columns ko hamesha ke liye khatam karna
-                    fin_df = fin_df.loc[:, ~fin_df.columns.duplicated()]
+                        fin_df.columns = [pd.to_datetime(str(d)).strftime('%b %Y').upper() for d in fin_df.columns]
+                        # 2. Security Guard: Duplicate columns ko hamesha ke liye khatam karna
+                        fin_df = fin_df.loc[:, ~fin_df.columns.duplicated()]
     
                         # 2. Indian Standard format mapping (Proper Sequence)
                         desired_order = {
