@@ -49,6 +49,10 @@ def fetch_safe_info(ticker_symbol):
 
 @st.cache_data(ttl=3600, show_spinner=False)
 def fetch_stock_history(ticker_symbol, period="1y"):
+    import sqlite3
+    import pandas as pd
+    import yfinance as yf
+    
     try:
         # 1. Godown (Database) check karega
         conn = sqlite3.connect('dig_master.db')
@@ -64,9 +68,14 @@ def fetch_stock_history(ticker_symbol, period="1y"):
         return df
         
     except Exception as e:
-        # 2. Agar stock local DB mein nahi hai, toh Yahoo se layega
+        # 2. Agar stock DB mein nahi hai, toh seedha Yahoo se layega (BUG FIXED)
         try:
-            t = yf.Ticker(ticker_symbol, session=session)
+            if not ticker_symbol.endswith('.NS') and not ticker_symbol.endswith('.BO'):
+                yahoo_symbol = f"{ticker_symbol}.NS"
+            else:
+                yahoo_symbol = ticker_symbol
+                
+            t = yf.Ticker(yahoo_symbol) # Yahan se purana session logic hata diya jo crash kar raha tha
             df = t.history(period=period)
             if df.empty:
                 df = t.history(period="1mo")
