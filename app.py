@@ -660,21 +660,21 @@ if st.session_state.current_view != "HOME":
                                 "Basic EPS": "Adjusted EPS (Rs.)"
                             }
         
-                        organized_data = {}
-                        for yf_key, display_name in desired_order.items():
-                            if yf_key in fin_df.index:
-                                organized_data[display_name] = fin_df.loc[yf_key]
-                            else:
-                                organized_data[display_name] = pd.Series(pd.NA, index=fin_df.columns)
-    
-                        # DataFrame banana aur Rows/Cols set karna
-                        pl_df = pd.DataFrame(organized_data).T
-    
-                        # 3. N/A wale purane saalo ko hide karna
-                        pl_df = pl_df.dropna(axis=1, how='all')
-    
-                        # 4. Aapka custom Crore formatter use karke display karna
-                        st.dataframe(format_df_to_crores(pl_df), use_container_width=True)
+                            organized_data = {}
+                            for yf_key, display_name in desired_order.items():
+                                if yf_key in fin_df.index:
+                                    organized_data[display_name] = fin_df.loc[yf_key]
+                                else:
+                                    organized_data[display_name] = pd.Series(pd.NA, index=fin_df.columns)
+        
+                            # DataFrame banana aur Rows/Cols set karna
+                            pl_df = pd.DataFrame(organized_data).T
+        
+                            # 3. N/A wale purane saalo ko hide karna
+                            pl_df = pl_df.dropna(axis=1, how='all')
+        
+                            # 4. Aapka custom Crore formatter use karke display karna
+                            st.dataframe(format_df_to_crores(pl_df), use_container_width=True)
                     else:
                         st.warning("Income Statement data not available.")
                 except Exception as e:
