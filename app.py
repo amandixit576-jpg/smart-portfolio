@@ -840,7 +840,7 @@ if st.session_state.current_view != "HOME":
                 elif pe >= 20 and pe < 40: st.info("⚖️ **Verdict: HOLD / SIP** (Fairly Valued: Normal pricing).")
                 else: st.warning("⚠️ **Verdict: CAUTION** (Overpriced: High premium).")
             elif entered_code: st.error("❌ Invalid Code.")
-                st.markdown("---")
+            st.markdown("---")
             st.markdown("### 💎 Premium Valuation Engine (Graham Model)")
             st.write("Calculates the intrinsic 'Fair Value' of the stock for long-term delivery investment.")
             
