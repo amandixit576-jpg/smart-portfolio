@@ -1,81 +1,54 @@
 import yfinance as yf
 import pandas as pd
-import requests
 import streamlit as st
 import sqlite3
+import requests
 
-# --- PRO DATA ENGINE (ANTI-BLOCK) ---
-# Ek "Human-like" session banate hain taaki Yahoo block na kare
+# --- 🛡️ STEALTH MODE ENGINE (Yahoo Blocks ko bypass karne ke liye) ---
 session = requests.Session()
 session.headers.update({
-    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/110.0.0.0 Safari/537.36',
-    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
+    'Accept': '*/*',
+    'Accept-Encoding': 'gzip, deflate, br',
+    'Connection': 'keep-alive'
 })
 
 @st.cache_data(ttl=3600, show_spinner=False)
 def fetch_safe_info(ticker_symbol):
-    import time
-    import requests
-    
-    # 1. Sabse badi galti ka ilaj: Agar naam ke aage .NS nahi laga hai, toh khud laga do
+    # Auto .NS logic
     if not ticker_symbol.endswith('.NS') and not ticker_symbol.endswith('.BO'):
-        yahoo_symbol = f"{ticker_symbol}.NS"
-    else:
-        yahoo_symbol = ticker_symbol
+        ticker_symbol += '.NS'
         
-    # 2. Smart Retry Logic (Agar Yahoo block kare toh naye bhes mein jayega)
-    for attempt in range(3):
+    # 3 baar try karega stealth mode mein
+    for _ in range(3):
         try:
-            # Har try mein naya aur strong "User-Agent" (Bhes badalna)
-            session = requests.Session()
-            session.headers.update({
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36'
-            })
-            
-            t = yf.Ticker(yahoo_symbol, session=session)
+            t = yf.Ticker(ticker_symbol, session=session)
             inf = t.info
-            
-            # 3. Check karna ki asli data aaya hai ya khali dabba (Market Cap check karke)
-            if inf and ('marketCap' in inf or len(inf) > 10):
+            # Check karega ki asli data aaya ya nahi
+            if inf and 'currentPrice' in inf: 
                 return inf
-            else:
-                time.sleep(1) # 1 second ruk kar dobara try karega
-                
-        except Exception as e:
-            time.sleep(1)
-            
-    # Agar 3 baar mein bhi fail ho jaye
+        except:
+            pass
     return {}
 
 @st.cache_data(ttl=3600, show_spinner=False)
 def fetch_stock_history(ticker_symbol, period="1y"):
-    import sqlite3
-    import pandas as pd
-    import yfinance as yf
-    
+    if not ticker_symbol.endswith('.NS') and not ticker_symbol.endswith('.BO'):
+        ticker_symbol += '.NS'
+        
     try:
-        # 1. Godown (Database) check karega
+        # 1. Pehle local DB (Godown) check karega
         conn = sqlite3.connect('dig_master.db')
         table_name = ticker_symbol.replace('.NS', '')
-        
-        query = f"SELECT * FROM {table_name}"
-        df = pd.read_sql_query(query, conn)
-        
+        df = pd.read_sql_query(f"SELECT * FROM {table_name}", conn)
         df['Date'] = pd.to_datetime(df['Date'])
         df.set_index('Date', inplace=True)
-        
         conn.close()
         return df
-        
-    except Exception as e:
-        # 2. Agar stock DB mein nahi hai, toh seedha Yahoo se layega (BUG FIXED)
+    except:
+        # 2. Agar DB mein nahi hai, toh Yahoo se Stealth mode mein layega
         try:
-            if not ticker_symbol.endswith('.NS') and not ticker_symbol.endswith('.BO'):
-                yahoo_symbol = f"{ticker_symbol}.NS"
-            else:
-                yahoo_symbol = ticker_symbol
-                
-            t = yf.Ticker(yahoo_symbol) # Yahan se purana session logic hata diya jo crash kar raha tha
+            t = yf.Ticker(ticker_symbol, session=session)
             df = t.history(period=period)
             if df.empty:
                 df = t.history(period="1mo")
@@ -85,6 +58,10 @@ def fetch_stock_history(ticker_symbol, period="1y"):
 
 @st.cache_data(ttl=86400, show_spinner=False)
 def fetch_financials(ticker_symbol):
-    t = yf.Ticker(ticker_symbol)
-    try: return t.financials, t.balance_sheet
-    except: return pd.DataFrame(), pd.DataFrame()
+    if not ticker_symbol.endswith('.NS'):
+        ticker_symbol += '.NS'
+    try:
+        t = yf.Ticker(ticker_symbol, session=session)
+        return t.financials, t.balance_sheet
+    except:
+        return pd.DataFrame(), pd.DataFrame()
