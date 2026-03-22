@@ -627,58 +627,58 @@ if st.session_state.current_view != "HOME":
             stmt1, stmt2, stmt3, stmt4 = st.tabs(["Annual P&L", "Quarterly P&L", "Balance Sheet", "Cash Flows"])
             with stmt1:
                 try:
-                        fin_df = t_obj.financials
-                        if not fin_df.empty:
-                            # 1. Pehle raw data ke duplicate columns uda do
-                            fin_df = fin_df.loc[:, ~fin_df.columns.duplicated()]
-                            
-                            # 2. Safe Date Conversion (Year ke sath, aur agar 'TTM' aaye toh usko bhi handle karega)
-                            safe_columns = []
-                            for col in fin_df.columns:
-                                try:
-                                    safe_columns.append(pd.to_datetime(str(col)).strftime('%b %Y').upper())
-                                except:
-                                    safe_columns.append(str(col).upper())
-                            
-                            fin_df.columns = safe_columns
-                            
-                            # 3. Rename hone ke baad ek final Security Check (taaki duplicate galti se bhi na bache)
-                            fin_df = fin_df.loc[:, ~fin_df.columns.duplicated()]
-            
-                        # 4. Indian Standard format mapping
-                        desired_order = {
-                            "Total Revenue": "Net Sales / Revenue",
-                            "Cost Of Revenue": "Total Expenditure",
-                            "Gross Profit": "Gross Profit",
-                            "Operating Income": "Operating Profit",
-                            "Other Income Expense": "Other Income",
-                            "Interest Expense": "Interest",
-                            "Reconciled Depreciation": "Depreciation",
-                            "Pretax Income": "Profit Before Tax",
-                            "Tax Provision": "Tax",
-                            "Net Income": "Net Profit",
-                            "Basic EPS": "Adjusted EPS (Rs.)"
-                        }
-    
-                        organized_data = {}
-                        for yf_key, display_name in desired_order.items():
-                            if yf_key in fin_df.index:
-                                organized_data[display_name] = fin_df.loc[yf_key]
-                            else:
-                                organized_data[display_name] = pd.Series(pd.NA, index=fin_df.columns)
-    
-                        # DataFrame banana aur Rows/Cols set karna
-                        pl_df = pd.DataFrame(organized_data).T
-    
-                        # 3. N/A wale purane saalo ko hide karna
-                        pl_df = pl_df.dropna(axis=1, how='all')
-    
-                        # 4. Aapka custom Crore formatter use karke display karna
-                        st.dataframe(format_df_to_crores(pl_df), use_container_width=True)
+                    fin_df = t_obj.financials
+                    if not fin_df.empty:
+                        # 1. Pehle raw data ke duplicate columns uda do
+                        fin_df = fin_df.loc[:, ~fin_df.columns.duplicated()]
+                        
+                        # 2. Safe Date Conversion (Year ke sath, aur agar 'TTM' aaye toh usko bhi handle karega)
+                        safe_columns = []
+                        for col in fin_df.columns:
+                            try:
+                                safe_columns.append(pd.to_datetime(str(col)).strftime('%b %Y').upper())
+                            except:
+                                safe_columns.append(str(col).upper())
+                        
+                        fin_df.columns = safe_columns
+                        
+                        # 3. Rename hone ke baad ek final Security Check (taaki duplicate galti se bhi na bache)
+                        fin_df = fin_df.loc[:, ~fin_df.columns.duplicated()]
+        
+                    # 4. Indian Standard format mapping
+                    desired_order = {
+                        "Total Revenue": "Net Sales / Revenue",
+                        "Cost Of Revenue": "Total Expenditure",
+                        "Gross Profit": "Gross Profit",
+                        "Operating Income": "Operating Profit",
+                        "Other Income Expense": "Other Income",
+                        "Interest Expense": "Interest",
+                        "Reconciled Depreciation": "Depreciation",
+                        "Pretax Income": "Profit Before Tax",
+                        "Tax Provision": "Tax",
+                        "Net Income": "Net Profit",
+                        "Basic EPS": "Adjusted EPS (Rs.)"
+                    }
+
+                    organized_data = {}
+                    for yf_key, display_name in desired_order.items():
+                        if yf_key in fin_df.index:
+                            organized_data[display_name] = fin_df.loc[yf_key]
                         else:
-                            st.warning("Income Statement data not available.")
+                            organized_data[display_name] = pd.Series(pd.NA, index=fin_df.columns)
+
+                    # DataFrame banana aur Rows/Cols set karna
+                    pl_df = pd.DataFrame(organized_data).T
+
+                    # 3. N/A wale purane saalo ko hide karna
+                    pl_df = pl_df.dropna(axis=1, how='all')
+
+                    # 4. Aapka custom Crore formatter use karke display karna
+                    st.dataframe(format_df_to_crores(pl_df), use_container_width=True)
+                    else:
+                        st.warning("Income Statement data not available.")
                 except Exception as e:
-                    st.warning(f"Error fetching Income Statement: {e}")
+                st.warning(f"Error fetching Income Statement: {e}")
             with stmt2:
                 try:
                 # Yahan hum 'quarterly_financials' fetch kar rahe hain
