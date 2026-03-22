@@ -627,14 +627,25 @@ if st.session_state.current_view != "HOME":
             stmt1, stmt2, stmt3, stmt4 = st.tabs(["Annual P&L", "Quarterly P&L", "Balance Sheet", "Cash Flows"])
             with stmt1:
                 try:
-                    fin_df = t_obj.financials
-                    if not fin_df.empty:
-                        # 1. Dates ko 'MAR 2024' format mein convert karna (Bulletproof)
-                        fin_df.columns = [pd.to_datetime(str(d)).strftime('%b %Y').upper() for d in fin_df.columns]
-                        # 2. Security Guard: Duplicate columns ko hamesha ke liye khatam karna
-                        fin_df = fin_df.loc[:, ~fin_df.columns.duplicated()]
-    
-                        # 2. Indian Standard format mapping (Proper Sequence)
+                        fin_df = t_obj.financials
+                        if not fin_df.empty:
+                            # 1. Pehle raw data ke duplicate columns uda do
+                            fin_df = fin_df.loc[:, ~fin_df.columns.duplicated()]
+                            
+                            # 2. Safe Date Conversion (Year ke sath, aur agar 'TTM' aaye toh usko bhi handle karega)
+                            safe_columns = []
+                            for col in fin_df.columns:
+                                try:
+                                    safe_columns.append(pd.to_datetime(str(col)).strftime('%b %Y').upper())
+                                except:
+                                    safe_columns.append(str(col).upper())
+                            
+                            fin_df.columns = safe_columns
+                            
+                            # 3. Rename hone ke baad ek final Security Check (taaki duplicate galti se bhi na bache)
+                            fin_df = fin_df.loc[:, ~fin_df.columns.duplicated()]
+            
+                        # 4. Indian Standard format mapping
                         desired_order = {
                             "Total Revenue": "Net Sales / Revenue",
                             "Cost Of Revenue": "Total Expenditure",
