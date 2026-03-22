@@ -646,20 +646,20 @@ if st.session_state.current_view != "HOME":
                             fin_df = fin_df.loc[:, ~fin_df.columns.duplicated()]
             
                         # 4. Indian Standard format mapping
-                        desired_order = {
-                            "Total Revenue": "Net Sales / Revenue",
-                            "Cost Of Revenue": "Total Expenditure",
-                            "Gross Profit": "Gross Profit",
-                            "Operating Income": "Operating Profit",
-                            "Other Income Expense": "Other Income",
-                            "Interest Expense": "Interest",
-                            "Reconciled Depreciation": "Depreciation",
-                            "Pretax Income": "Profit Before Tax",
-                            "Tax Provision": "Tax",
-                            "Net Income": "Net Profit",
-                            "Basic EPS": "Adjusted EPS (Rs.)"
-                        }
-    
+                            desired_order = {
+                                "Total Revenue": "Net Sales / Revenue",
+                                "Cost Of Revenue": "Total Expenditure",
+                                "Gross Profit": "Gross Profit",
+                                "Operating Income": "Operating Profit",
+                                "Other Income Expense": "Other Income",
+                                "Interest Expense": "Interest",
+                                "Reconciled Depreciation": "Depreciation",
+                                "Pretax Income": "Profit Before Tax",
+                                "Tax Provision": "Tax",
+                                "Net Income": "Net Profit",
+                                "Basic EPS": "Adjusted EPS (Rs.)"
+                            }
+        
                         organized_data = {}
                         for yf_key, display_name in desired_order.items():
                             if yf_key in fin_df.index:
