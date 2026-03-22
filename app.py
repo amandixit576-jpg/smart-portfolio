@@ -629,21 +629,8 @@ if st.session_state.current_view != "HOME":
                 try:
                     fin_df = t_obj.financials
                     if not fin_df.empty:
-                            # 1. Pehle raw data ke duplicate columns uda do
-                            fin_df = fin_df.loc[:, ~fin_df.columns.duplicated()]
-                            
-                            # 2. Safe Date Conversion (Year ke sath, aur agar 'TTM' aaye toh usko bhi handle karega)
-                            safe_columns = []
-                            for col in fin_df.columns:
-                                try:
-                                    safe_columns.append(pd.to_datetime(str(col)).strftime('%b %Y').upper())
-                                except:
-                                    safe_columns.append(str(col).upper())
-                            
-                            fin_df.columns = safe_columns
-                            
-                            # 3. Rename hone ke baad ek final Security Check (taaki duplicate galti se bhi na bache)
-                            fin_df = fin_df.loc[:, ~fin_df.columns.duplicated()]
+                            # MANUAL FIX: Date ke sath zabardasti ek unique number (Col 1, Col 2) jod diya
+                            fin_df.columns = [f"{str(col)[:10]} (Col {i+1})" for i, col in enumerate(fin_df.columns)]
             
                         # 4. Indian Standard format mapping
                             desired_order = {
