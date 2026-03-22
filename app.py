@@ -671,8 +671,7 @@ if st.session_state.current_view != "HOME":
                 # Yahan hum 'quarterly_financials' fetch kar rahe hain
                     q_fin_df = t_obj.quarterly_financials
                     if not q_fin_df.empty:
-                        q_fin_df.columns = [pd.to_datetime(str(d)).strftime('%b %Y').upper() for d in q_fin_df.columns]
-                        q_fin_df = q_fin_df.loc[:, ~q_fin_df.columns.duplicated()]
+                        q_fin_df.columns = [f"{str(col)[:10]} (Col {i+1})" for i, col in enumerate(q_fin_df.columns)]
     
                         # 2. Indian Standard format mapping
                         desired_order_q = {
@@ -712,8 +711,7 @@ if st.session_state.current_view != "HOME":
                 try:
                     bs_df = t_obj.balance_sheet
                     if not bs_df.empty:
-                        bs_df.columns = [pd.to_datetime(str(d)).strftime('%b %Y').upper() for d in bs_df.columns]
-                        bs_df = bs_df.loc[:, ~bs_df.columns.duplicated()]
+                        bs_df.columns = [f"{str(col)[:10]} (Col {i+1})" for i, col in enumerate(bs_df.columns)]
                         # 2. Indian Standard format mapping for Balance Sheet
                         desired_order_bs = {
                             "Common Stock Equity": "Share Capital & Equity",
@@ -751,8 +749,7 @@ if st.session_state.current_view != "HOME":
                 try:
                     cf_df = t_obj.cashflow
                     if not cf_df.empty:
-                        cf_df.columns = [pd.to_datetime(str(d)).strftime('%b %Y').upper() for d in cf_df.columns]
-                        cf_df = cf_df.loc[:, ~cf_df.columns.duplicated()]
+                        cf_df.columns = [f"{str(col)[:10]} (Col {i+1})" for i, col in enumerate(cf_df.columns)]
     
                         # 2. Format mapping for Cash Flow
                         desired_order_cf = {
