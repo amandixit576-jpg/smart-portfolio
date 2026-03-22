@@ -840,6 +840,45 @@ if st.session_state.current_view != "HOME":
                 elif pe >= 20 and pe < 40: st.info("⚖️ **Verdict: HOLD / SIP** (Fairly Valued: Normal pricing).")
                 else: st.warning("⚠️ **Verdict: CAUTION** (Overpriced: High premium).")
             elif entered_code: st.error("❌ Invalid Code.")
+                st.markdown("---")
+            st.markdown("### 💎 Premium Valuation Engine (Graham Model)")
+            st.write("Calculates the intrinsic 'Fair Value' of the stock for long-term delivery investment.")
+            
+            try:
+                # Yahoo se current data nikalna
+                current_price = info.get('currentPrice', info.get('previousClose', 0))
+                eps = info.get('trailingEps', 0)
+                book_value = info.get('bookValue', 0)
+                
+                # Formula tabhi chalega jab company profit mein ho (EPS > 0)
+                if eps > 0 and book_value > 0:
+                    # Graham Number Calculation
+                    graham_number = (22.5 * eps * book_value) ** 0.5
+                    
+                    # Margin of Safety (Sasta mil raha hai ya mehnga?)
+                    margin_of_safety = ((graham_number - current_price) / graham_number) * 100
+                    
+                    # UI Display
+                    col1, col2 = st.columns(2)
+                    with col1:
+                        st.metric(label="Current Market Price", value=f"₹{round(current_price, 2)}")
+                    with col2:
+                        st.metric(label="Intrinsic Fair Value", value=f"₹{round(graham_number, 2)}")
+                        
+                    # AI Recommendation System
+                    if current_price < graham_number:
+                        st.success(f"🔥 **UNDERVALUED (BUY SIGNAL):** Stock is trading at a {round(margin_of_safety, 2)}% discount to its true value. High Margin of Safety for Delivery!")
+                    elif current_price < (graham_number * 1.2): # 20% premium tak theek hai
+                        st.warning(f"⚖️ **FAIRLY VALUED:** Trading near its fair value. Good for accumulation on dips.")
+                    else:
+                        st.error(f"⚠️ **OVERVALUED (SELL/AVOID SIGNAL):** Stock is highly expensive compared to its fundamentals. Risk of correction is high.")
+                        
+                else:
+                    st.info("⚠️ Valuation Engine Alert: Company has negative earnings (Loss) or negative book value. Traditional valuation models cannot be applied.")
+            
+            except Exception as e:
+                st.write("Valuation data currently unavailable for this stock.")
+
 
         with tab7:
             st.markdown("### 📸 Influencer Content Dashboard")
@@ -948,45 +987,7 @@ Want to see the deep-dive audit? Hit the link in my bio to use my custom screene
 
     else:
         st.warning("⚠️ Stock data unavailable right now. Try another NSE symbol like TCS, ITC, INFY.")
-            st.markdown("---")
-            st.markdown("### 💎 Premium Valuation Engine (Graham Model)")
-            st.write("Calculates the intrinsic 'Fair Value' of the stock for long-term delivery investment.")
             
-            try:
-                # Yahoo se current data nikalna
-                current_price = info.get('currentPrice', info.get('previousClose', 0))
-                eps = info.get('trailingEps', 0)
-                book_value = info.get('bookValue', 0)
-                
-                # Formula tabhi chalega jab company profit mein ho (EPS > 0)
-                if eps > 0 and book_value > 0:
-                    # Graham Number Calculation
-                    graham_number = (22.5 * eps * book_value) ** 0.5
-                    
-                    # Margin of Safety (Sasta mil raha hai ya mehnga?)
-                    margin_of_safety = ((graham_number - current_price) / graham_number) * 100
-                    
-                    # UI Display
-                    col1, col2 = st.columns(2)
-                    with col1:
-                        st.metric(label="Current Market Price", value=f"₹{round(current_price, 2)}")
-                    with col2:
-                        st.metric(label="Intrinsic Fair Value", value=f"₹{round(graham_number, 2)}")
-                        
-                    # AI Recommendation System
-                    if current_price < graham_number:
-                        st.success(f"🔥 **UNDERVALUED (BUY SIGNAL):** Stock is trading at a {round(margin_of_safety, 2)}% discount to its true value. High Margin of Safety for Delivery!")
-                    elif current_price < (graham_number * 1.2): # 20% premium tak theek hai
-                        st.warning(f"⚖️ **FAIRLY VALUED:** Trading near its fair value. Good for accumulation on dips.")
-                    else:
-                        st.error(f"⚠️ **OVERVALUED (SELL/AVOID SIGNAL):** Stock is highly expensive compared to its fundamentals. Risk of correction is high.")
-                        
-                else:
-                    st.info("⚠️ Valuation Engine Alert: Company has negative earnings (Loss) or negative book value. Traditional valuation models cannot be applied.")
-            
-            except Exception as e:
-                st.write("Valuation data currently unavailable for this stock.")
-
 # --- 6. MEGA FOOTER ---
 mega_footer = """
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
