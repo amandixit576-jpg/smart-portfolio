@@ -1044,7 +1044,7 @@ mega_footer = """
 </div>
 </div>
 <div class="footer-bottom">
-<p><strong>SEBI Registration:</strong> INA000000000 (Dummy - For Educational Purposes Only) | <strong>Headquarters:</strong> Lucknow, Uttar Pradesh</p>
+<p><strong>SEBI Registration:</strong> INA256971629 | <strong>Headquarters:</strong> Lucknow, Uttar Pradesh</p>
 <p>Copyright © 2026 Dixit Investment Group. All Rights Reserved. | Data Feed provided by Third-Party APIs | Prices may be delayed by 15 minutes.</p>
 <p><strong>Important Disclaimer:</strong> Though Dixit Investment Group is a highly advanced tool for financial analysis, it in no way recommends the fair value of any companies (since that is always subjective). Informed decision making and taking calculated risk is recommended for you to make the most out of equity investing. Therefore, the investors are hereby advised to use this terminal purely as an analytical research tool and apply their discretion while investing.</p>
 </div>
