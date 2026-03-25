@@ -878,7 +878,61 @@ if st.session_state.current_view != "HOME":
             
             except Exception as e:
                 st.write("Valuation data currently unavailable for this stock.")
-
+                st.markdown("---")
+                st.markdown("### ⚡ Premium Technical Radar (Intraday & Swing)")
+                st.write("Analyzes price momentum and short-term trends for trading decisions.")
+                
+                try:
+                    # Hum pichle 1 saal ka data use karenge jo upar se load hua hai
+                    # Make sure aapke code mein hist_df pehle se defined hai (chart wale section se)
+                    if not hist_df.empty and len(hist_df) > 50:
+                        
+                        current_close = hist_df['Close'].iloc[-1]
+                        
+                        # 1. Calculate 50-Day Moving Average (Trend Indicator)
+                        sma_50 = hist_df['Close'].rolling(window=50).mean().iloc[-1]
+                        
+                        # 2. Calculate 14-Day RSI (Momentum Indicator)
+                        delta = hist_df['Close'].diff()
+                        gain = (delta.where(delta > 0, 0)).rolling(window=14).mean()
+                        loss = (-delta.where(delta < 0, 0)).rolling(window=14).mean()
+                        rs = gain / loss
+                        rsi_14 = 100 - (100 / (1 + rs)).iloc[-1]
+                
+                        # UI Display for Technicals
+                        col1, col2, col3 = st.columns(3)
+                        with col1:
+                            st.metric(label="Current Price", value=f"₹{round(current_close, 2)}")
+                        with col2:
+                            st.metric(label="14-Day RSI", value=f"{round(rsi_14, 2)}")
+                        with col3:
+                            st.metric(label="50-Day SMA", value=f"₹{round(sma_50, 2)}")
+                
+                        # --- AI Trading Signals Generation ---
+                        st.markdown("#### 🤖 Algorithmic Trading Signal:")
+                        
+                        # Condition 1: Oversold (RSI < 30) AND Uptrending (Price > SMA) = STRONG BUY
+                        if rsi_14 < 30 and current_close > sma_50:
+                            st.success("🟢 **STRONG BUY SIGNAL:** Stock is oversold (cheap) but maintaining a positive trend. Good entry point for a bounce back!")
+                            
+                        # Condition 2: Overbought (RSI > 70) = SELL / BOOK PROFITS
+                        elif rsi_14 > 70:
+                            st.error("🔴 **SELL / ALERT:** Stock is highly overbought. Profit booking is expected soon. Avoid fresh buying!")
+                            
+                        # Condition 3: Positive Trend, Normal RSI = HOLD / ACCUMULATE
+                        elif current_close > sma_50 and 30 <= rsi_14 <= 70:
+                            st.info("🟡 **BULLISH / HOLD:** Stock is in a healthy uptrend. Existing positions can be held.")
+                            
+                        # Condition 4: Negative Trend = WEAKNESS
+                        elif current_close < sma_50:
+                            st.warning("⚠️ **BEARISH / WEAK:** Stock is trading below its 50-Day moving average. Bears are in control. Wait for trend reversal.")
+                            
+                    else:
+                        st.warning("Not enough historical data to generate technical signals. Need at least 50 days of trading data.")
+                
+                except Exception as e:
+                    st.write("Technical analysis data currently unavailable.")
+                
 
         with tab7:
             st.markdown("### 📸 Influencer Content Dashboard")
